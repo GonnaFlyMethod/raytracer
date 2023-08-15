@@ -2,13 +2,21 @@
 
 This is a raytracer based on the book
 [Raytracing in one weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
-By implementing the ideas & concepts from the book, I'm teaching myself 
+By implementing the ideas & concepts from the book, I'm teaching myself
 how do raytracers work in practice and what underlying principles and math are
 used to create cool looking scenes.
 
 Final result:
 
 ![](./collection/final_result.png)
+
+# Building the project
+This project uses cmake as a build system. `CMakeLists.txt` should be utilized to generate cmake-related directory. For example, CLion IDE offers to pick the path to `CMakeLists.txt`
+at the beginning of work:
+![](./collection/cmake_instructions.png)
+![](./collection/cmake_instructions1.png)
+
+`CMakeLists.txt` is located in `src/CMakeLists.txt`
 
 
 Evolution of my journey:
