@@ -4,6 +4,10 @@
 #include "camera.h"
 #include "material.h"
 
+// TODO:
+// 1) Rename project in cmake lists(untitled1)
+// 2) Add multithreading (utilizing all the cors of the computer)
+
 int main() {
     // World
     HittableList world = HittableList();

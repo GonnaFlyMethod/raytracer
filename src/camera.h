@@ -1,8 +1,25 @@
 #pragma once
 
+#include <unordered_map>
+#include <memory>
+#include <future>
 #include "common.h"
 #include "material.h"
 #include "color.h"
+
+
+struct BatchBoarder{
+    size_t xStart;
+    size_t yStart;
+    size_t xEnd;
+    size_t yEnd;
+};
+
+struct CoreWork{
+    size_t coreNum;
+    std::vector<color> workDone;
+};
+
 
 class Camera{
 private:
@@ -99,24 +116,77 @@ public:
     void render(const HittableList& world) {
         this->initilize();
 
-        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+        std::size_t cores_available = std::thread::hardware_concurrency();
 
-        for (int j = 0; j < image_height; ++j) {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+        const size_t pixels_in_row_for_each_thread = image_width / cores_available;
+        const size_t left_over = image_width % cores_available;
 
-            for (int i = 0; i < image_width; ++i) {
+        std::unordered_map<size_t, BatchBoarder> work_among_cores;
+        size_t image_width_intervals = 0;
 
-                color pixel_color(0,0,0);
+        for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
+            auto batch = BatchBoarder{};
 
-                for (int sample = 0; sample < samples_per_pixel; ++sample) {
-                    // TODO: experiment with antialiasing for random [-1, 1)
+            batch.xStart = image_width_intervals;
+            image_width_intervals += pixels_in_row_for_each_thread;
+            batch.xEnd = image_width_intervals;
 
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world, max_depth);
+            batch.yStart = 0;
+            batch.yEnd = image_height;
+
+            work_among_cores[current_core] = batch;
+        }
+
+        std::vector<std::future<CoreWork>> future_vector;
+
+        for(const auto & [ core_num, batch ] :  work_among_cores){
+            future_vector.emplace_back(
+                    std::async([core_num, this, &world, &batch]{
+                       CoreWork cw;
+                       cw.coreNum = core_num;
+
+                       for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
+
+//                            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+
+                           for (size_t i = batch.xStart; i < batch.xEnd; ++i) {
+
+                               color pixel_color(0,0,0);
+
+                               for (int sample = 0; sample < this->samples_per_pixel; ++sample) {
+                                   // TODO: experiment with antialiasing for random [-1, 1)
+
+                                   ray r = get_ray(i, j);
+                                   pixel_color += ray_color(r, world, this->max_depth);
+                               }
+
+                               cw.workDone.push_back(pixel_color);
+                           }
+                       }
+
+                       return cw;
+                    }
+            ));
+        }
+
+        int num_of_cores_finished = 0;
+
+        while(num_of_cores_finished != cores_available){
+            num_of_cores_finished = 0;
+
+            for (auto &future: future_vector){
+                if (future.valid()){
+                    num_of_cores_finished++;
+                }else{
+                    std::clog << "Future is not valid" << std::endl;
                 }
-                write_color(std::cout, pixel_color, samples_per_pixel);
             }
         }
+
+
+//        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+        // construct image;
 
         std::clog << "\rDone.\n";
     }
