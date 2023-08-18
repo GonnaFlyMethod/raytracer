@@ -1,4 +1,7 @@
 #include "common.h"
+#include "color.h"
+#include <ctime>
+#include <fstream>
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
@@ -7,6 +10,14 @@
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
 // 2) Add multithreading (utilizing all the cors of the computer)
+
+std::string getCurrentDateTime(){
+    time_t now = std::time(nullptr);
+
+    // convert now to string form
+    char* date_time = ctime(&now);
+    return date_time;
+}
 
 int main() {
     // World
@@ -72,7 +83,7 @@ int main() {
     Camera cam;
 
     cam.aspect_ratio      = 16.0f / 9.0f;
-    cam.image_width       = 640;
+    cam.image_width       = 96;
     cam.samples_per_pixel = 20;
     cam.max_depth         = 25;
 
@@ -84,8 +95,28 @@ int main() {
     cam.defocus_angle = 0.6f;
     cam.focus_dist    = 10.0;
 
+    std::map<size_t, std::vector<color>> final_result;
+
     // Render
-    cam.render(world);
+    cam.render(world, final_result);
+
+    std::clog << "Constructing image..." << std::flush;
+
+    std::string filename = "render.ppm";
+
+    std::ofstream file_handler;
+
+    file_handler.open(filename, std::ios::out | std::ios::binary);
+
+    file_handler << "P3\n" << cam.image_width << ' ' << cam.image_height << "\n255\n";
+
+    for(auto& [ core_num, pixels_batch ] :  final_result){
+        for (auto color : pixels_batch){
+            write_color(file_handler, color, cam.samples_per_pixel);
+        }
+    }
+
+    file_handler.close();
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <unordered_map>
 #include <memory>
 #include <future>
@@ -10,9 +11,7 @@
 
 struct BatchBoarder{
     size_t xStart;
-    size_t yStart;
     size_t xEnd;
-    size_t yEnd;
 };
 
 struct CoreWork{
@@ -20,10 +19,15 @@ struct CoreWork{
     std::vector<color> workDone;
 };
 
+inline bool operator<(const CoreWork& lhs, const CoreWork& rhs)
+{
+    return lhs.coreNum < rhs.coreNum;
+}
+
+
 
 class Camera{
 private:
-    int image_height; // Rendered image height
     point3 camera_center;
     point3 pixel_0_0_location;
 
@@ -74,6 +78,7 @@ private:
 public:
     double aspect_ratio = 1.0f; // Ratio of image: width / height
     int image_width = 100; // Rendered image width in pixel count
+    int image_height; // Rendered image height
     int samples_per_pixel = 10; // Count of random samples
     int max_depth = 10; // Maximum number of ray bounces
 
@@ -113,7 +118,7 @@ public:
         return pixel_color + pixel_color1;
     }
 
-    void render(const HittableList& world) {
+    void render(const HittableList& world, std::map<size_t , std::vector<color>>& final_work) {
         this->initilize();
 
         std::size_t cores_available = std::thread::hardware_concurrency();
@@ -121,7 +126,9 @@ public:
         const size_t pixels_in_row_for_each_thread = image_width / cores_available;
         const size_t left_over = image_width % cores_available;
 
-        std::unordered_map<size_t, BatchBoarder> work_among_cores;
+
+        // TODO: consider using std::unordered_map here
+        std::map<size_t, BatchBoarder> work_among_cores;
         size_t image_width_intervals = 0;
 
         for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
@@ -131,23 +138,23 @@ public:
             image_width_intervals += pixels_in_row_for_each_thread;
             batch.xEnd = image_width_intervals;
 
-            batch.yStart = 0;
-            batch.yEnd = image_height;
-
             work_among_cores[current_core] = batch;
         }
 
         std::vector<std::future<CoreWork>> future_vector;
+        future_vector.reserve(work_among_cores.size());
 
         for(const auto & [ core_num, batch ] :  work_among_cores){
             future_vector.emplace_back(
-                    std::async([core_num, this, &world, &batch]{
+                    std::async([batch, core_num, this, &world]{
                        CoreWork cw;
                        cw.coreNum = core_num;
 
-                       for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
+                       for (size_t j = 0; j < this->image_height; ++j) {
+                           double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
 
-//                            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
+                            std::clog << "\r[Thread " << core_num << "] "
+                            << "Scanlines calculated: " << raw_percentage * 100 << " %" << std::endl;
 
                            for (size_t i = batch.xStart; i < batch.xEnd; ++i) {
 
@@ -169,29 +176,28 @@ public:
             ));
         }
 
-        int num_of_cores_finished = 0;
+        int futures_ready = 0;
 
-        while(num_of_cores_finished != cores_available){
-            num_of_cores_finished = 0;
+        while(futures_ready != cores_available){
+            futures_ready = 0;
 
             for (auto &future: future_vector){
-                if (future.valid()){
-                    num_of_cores_finished++;
-                }else{
-                    std::clog << "Future is not valid" << std::endl;
+                // Waiting for each future to finish its work and collecting results
+
+                // TODO: consider removing the 1st part of the if statement
+                if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready){
+                    futures_ready++;
                 }
             }
         }
 
-
-//        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-        // construct image;
-
-        std::clog << "\rDone.\n";
+        for (auto  &future: future_vector){
+            CoreWork cw = future.get();
+            final_work[cw.coreNum] = cw.workDone;
+        }
     }
 
-    ray get_ray(int i, int j) const {
+    [[nodiscard]] ray get_ray(size_t i, size_t j) const {
         // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
         // the camera defocus disk.
 
@@ -201,7 +207,7 @@ public:
         auto ray_origin = (defocus_angle <= 0) ? camera_center : this->defocus_disk_sample();
         auto ray_direction = pixel_sample - ray_origin;
 
-        return ray(ray_origin, ray_direction);
+        return {ray_origin, ray_direction};
     }
 
     point3 defocus_disk_sample() const {
