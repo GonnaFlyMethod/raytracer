@@ -3,4 +3,4 @@ project(untitled1)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(untitled1 main.cpp vec3.h color.h ray.h hittable.h sphere.h hittable_list.h common.h camera.h material.h datetime.h datetime.cpp adding_objects_to_world.h adding_objects_to_world.cpp)
+add_executable(untitled1 main.cpp vec3.h ray.h hittable.h sphere.h hittable_list.h common_math.h camera.h material.h main_helpers.h main_helpers.cpp)

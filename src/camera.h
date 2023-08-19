@@ -2,7 +2,7 @@
 
 #include <map>
 #include <future>
-#include "common.h"
+#include "common_math.h"
 #include "material.h"
 
 struct BatchBoarder{

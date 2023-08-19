@@ -1,11 +1,8 @@
-#include "common.h"
-#include "datetime.h"
+#include "common_math.h"
+#include "main_helpers.h"
 #include <chrono>
-#include "color.h"
-#include <fstream>
 #include "hittable_list.h"
 #include "camera.h"
-#include "adding_objects_to_world.h"
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -34,31 +31,17 @@ int main() {
     std::map<size_t, std::vector<Color>> final_result;
 
     auto t1 = std::chrono::high_resolution_clock::now();
-    // Render
+
+    std::clog << "Rendering colors of pixels..." << std::endl;
     cam.render(world, final_result);
-    auto t2 = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
-
-    std::clog << "Rendering took: "<< ms_double.count() / 1000 << "s " << std::endl;
 
     std::clog << "Constructing image..." << std::endl;
+    write_colors_into_file(final_result, cam.samples_per_pixel, cam.image_width, cam.image_height);
 
-    std::string filename = "render_" + get_current_datetime() + ".ppm";
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
 
-    std::ofstream file_handler;
-
-    file_handler.open(filename, std::ios::out | std::ios::binary);
-
-    file_handler << "P3\n" << cam.image_width << ' ' << cam.image_height << "\n255\n";
-
-    for(auto& [ core_num, pixels_batch ] :  final_result){
-        for (auto color : pixels_batch){
-            write_color(file_handler, color, cam.samples_per_pixel);
-        }
-    }
-
-    file_handler.close();
+    std::clog << "The whole process of rendering took: "<< ms_double.count() / 1000 << "s " << std::endl;
 
     return 0;
 }

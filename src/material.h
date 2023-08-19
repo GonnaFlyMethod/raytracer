@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include "common_math.h"
 #include "hittable.h"
 
 class Material{
