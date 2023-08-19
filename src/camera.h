@@ -10,8 +10,8 @@
 
 
 struct BatchBoarder{
-    size_t yStart;
-    size_t yEnd;
+    int yStart;
+    int yEnd;
 };
 
 struct CoreWork{
@@ -118,13 +118,12 @@ public:
     void render(const HittableList& world, std::map<size_t , std::vector<color>>& final_work) {
         this->initilize();
 
-        std::size_t cores_available = std::thread::hardware_concurrency();
+        int cores_available = static_cast<int>(std::thread::hardware_concurrency());
 
-        const size_t pixels_in_row_for_each_thread = image_height / cores_available;
-        const size_t left_over = image_height % cores_available;
+        const int pixels_in_row_for_each_thread = image_height / cores_available;
 
         std::map<size_t, BatchBoarder> work_among_cores;
-        size_t image_height_intervals = 0;
+        int image_height_intervals = 0;
 
         for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
             auto batch_boarder = BatchBoarder{};
@@ -136,6 +135,9 @@ public:
             work_among_cores[current_core] = batch_boarder;
         }
 
+        const int left_over = image_height % cores_available;
+        work_among_cores[cores_available].yEnd += left_over;
+
         std::vector<std::future<CoreWork>> future_vector;
         future_vector.reserve(work_among_cores.size());
 
@@ -145,14 +147,14 @@ public:
                     CoreWork cw;
                     cw.coreNum = core_num;
 
-                    for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
+                    for (int j = batch.yStart; j < batch.yEnd; ++j) {
                         double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
 
-                        std::string core_work_progress = "[Thread " + std::to_string(core_num) + "]" +
+                        std::string core_work_progress = "[Core " + std::to_string(core_num) + "]" +
                             " Rows calculated: " + std::to_string(raw_percentage * 100) + " %\n";
                         std::clog << core_work_progress;
 
-                        for (size_t i = 0; i < this->image_width; ++i) {
+                        for (int i = 0; i < this->image_width; ++i) {
                             color pixel_color(0,0,0);
 
                             for (int sample = 0; sample < this->samples_per_pixel; ++sample) {
@@ -171,27 +173,13 @@ public:
             ));
         }
 
-        int futures_ready = 0;
-
-        while(futures_ready != cores_available){
-            futures_ready = 0;
-
-            for (auto &future: future_vector){
-                // Waiting for each future to finish its work and collecting results
-
-                if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready){
-                    futures_ready++;
-                }
-            }
-        }
-
         for (auto  &future: future_vector){
             CoreWork cw = future.get();
             final_work[cw.coreNum] = cw.workDone;
         }
     }
 
-    [[nodiscard]] ray get_ray(size_t i, size_t j) const {
+    [[nodiscard]] ray get_ray(int i, int j) const {
         // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
         // the camera defocus disk.
 
@@ -204,14 +192,16 @@ public:
         return {ray_origin, ray_direction};
     }
 
-    point3 defocus_disk_sample() const {
+    [[nodiscard]] point3 defocus_disk_sample() const {
         // Returns a random point in the camera defocus disk.
+
         auto p = random_in_unit_disk();
         return camera_center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
     }
 
-    vec3 pixel_sample_square() const {
+    [[nodiscard]] vec3 pixel_sample_square() const {
         // Returns a random point in the square surrounding a pixel at the origin.
+
         auto px = -0.5 + random_double();
         auto py = -0.5 + random_double();
         return (px * pixel_delta_u) + (py * pixel_delta_v);
