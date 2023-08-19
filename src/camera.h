@@ -10,8 +10,8 @@
 
 
 struct BatchBoarder{
-    size_t xStart;
-    size_t xEnd;
+    size_t yStart;
+    size_t yEnd;
 };
 
 struct CoreWork{
@@ -123,20 +123,19 @@ public:
 
         std::size_t cores_available = std::thread::hardware_concurrency();
 
-        const size_t pixels_in_row_for_each_thread = image_width / cores_available;
-        const size_t left_over = image_width % cores_available;
-
+        const size_t pixels_in_row_for_each_thread = image_height / cores_available;
+        const size_t left_over = image_height % cores_available;
 
         // TODO: consider using std::unordered_map here
         std::map<size_t, BatchBoarder> work_among_cores;
-        size_t image_width_intervals = 0;
+        size_t image_height_intervals = 0;
 
         for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
             auto batch = BatchBoarder{};
 
-            batch.xStart = image_width_intervals;
-            image_width_intervals += pixels_in_row_for_each_thread;
-            batch.xEnd = image_width_intervals;
+            batch.yStart = image_height_intervals;
+            image_height_intervals += pixels_in_row_for_each_thread;
+            batch.yEnd = image_height_intervals;
 
             work_among_cores[current_core] = batch;
         }
@@ -150,13 +149,13 @@ public:
                        CoreWork cw;
                        cw.coreNum = core_num;
 
-                       for (size_t j = 0; j < this->image_height; ++j) {
+                       for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
                            double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
 
                             std::clog << "\r[Thread " << core_num << "] "
                             << "Scanlines calculated: " << raw_percentage * 100 << " %" << std::endl;
 
-                           for (size_t i = batch.xStart; i < batch.xEnd; ++i) {
+                           for (size_t i = 0; i < this->image_width; ++i) {
 
                                color pixel_color(0,0,0);
 

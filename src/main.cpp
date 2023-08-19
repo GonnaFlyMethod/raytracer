@@ -1,6 +1,9 @@
 #include "common.h"
-#include "color.h"
+#include <chrono>
+#include <iomanip>
 #include <ctime>
+#include <sstream>
+#include "color.h"
 #include <fstream>
 #include "hittable_list.h"
 #include "sphere.h"
@@ -9,14 +12,14 @@
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
-// 2) Add multithreading (utilizing all the cors of the computer)
 
 std::string getCurrentDateTime(){
-    time_t now = std::time(nullptr);
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
 
-    // convert now to string form
-    char* date_time = ctime(&now);
-    return date_time;
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S");
+    return oss.str();
 }
 
 int main() {
@@ -83,7 +86,7 @@ int main() {
     Camera cam;
 
     cam.aspect_ratio      = 16.0f / 9.0f;
-    cam.image_width       = 96;
+    cam.image_width       = 100;
     cam.samples_per_pixel = 20;
     cam.max_depth         = 25;
 
@@ -97,12 +100,19 @@ int main() {
 
     std::map<size_t, std::vector<color>> final_result;
 
+
+    auto t1 = std::chrono::high_resolution_clock::now();
     // Render
     cam.render(world, final_result);
+    auto t2 = std::chrono::high_resolution_clock::now();
 
-    std::clog << "Constructing image..." << std::flush;
+    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
 
-    std::string filename = "render.ppm";
+    std::clog << "Rendering took: "<< ms_double.count() / 1000 << "s " << std::endl;
+
+    std::clog << "Constructing image..." << std::endl;
+
+    std::string filename = "render_" + getCurrentDateTime() +".ppm";
 
     std::ofstream file_handler;
 
