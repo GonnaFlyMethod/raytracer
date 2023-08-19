@@ -2,8 +2,11 @@
 
 #include <map>
 #include <future>
+
 #include "common_math.h"
 #include "material.h"
+#include "vec3.h"
+#include "ray.h"
 
 struct BatchBoarder{
     int yStart;

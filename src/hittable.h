@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common_math.h"
+#include <memory>
 
 class Material;
 
@@ -8,7 +9,7 @@ class Material;
 struct hit_record{
     Point3 p = Point3(0.0f, 0.0f, 0.0f);
     Vec3 normal = Vec3(0.0f, 0.0f, 0.0f);
-    shared_ptr<Material> mat_ptr;
+    std::shared_ptr<Material> mat_ptr;
 
     double t = 0.0f;
     bool front_face = false;
