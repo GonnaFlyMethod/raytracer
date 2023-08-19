@@ -4,18 +4,18 @@
 
 class Sphere: public Hittable{
 public:
-    point3  center;
+    Point3  center;
     double radius;
     shared_ptr<Material> mat_ptr;
 
-    Sphere(point3 cen, double r, shared_ptr<Material> m): center(cen), radius(r), mat_ptr(m) {};
+    Sphere(Point3 cen, double r, shared_ptr<Material> m): center(cen), radius(r), mat_ptr(m) {};
 
-    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
 };
 
-bool Sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const{
-    vec3 cr = r.GetOrigin() - this->center;
+bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const{
+    Vec3 cr = r.GetOrigin() - this->center;
 
     double a = r.GetDirection().length_squared();
     double half_b = dot(cr, r.GetDirection());
@@ -40,7 +40,7 @@ bool Sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     rec.t = root;
     rec.p = r.at(rec.t);
 
-    vec3 outward_normal = (rec.p - this->center) / this->radius;
+    Vec3 outward_normal = (rec.p - this->center) / this->radius;
 
     rec.set_face_normal(r, outward_normal);
 

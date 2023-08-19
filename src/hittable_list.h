@@ -22,11 +22,11 @@ public:
          this->objects.clear();
      }
 
-    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override;
+    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
 
 };
 
-bool HittableList::hit(const ray &r, double t_min, double t_max, hit_record &rec) const {
+bool HittableList::hit(const Ray &r, double t_min, double t_max, hit_record &rec) const {
     hit_record tmp_record;
 
     bool hitted_some_object = false;

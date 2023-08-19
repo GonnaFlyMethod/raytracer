@@ -3,7 +3,7 @@
 #include <iostream>
 #include "common.h"
 
-void write_color(std::ostream& out, color& pixel_color, int samples_per_pixel){
+void write_color(std::ostream& out, Color& pixel_color, int samples_per_pixel){
     double scale = 1.0 / samples_per_pixel;
 
     double r = pixel_color.x();

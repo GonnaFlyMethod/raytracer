@@ -1,12 +1,9 @@
 #pragma once
 
 #include <map>
-#include <unordered_map>
-#include <memory>
 #include <future>
 #include "common.h"
 #include "material.h"
-#include "color.h"
 
 
 struct BatchBoarder{
@@ -15,8 +12,8 @@ struct BatchBoarder{
 };
 
 struct CoreWork{
-    size_t coreNum{};
-    std::vector<color> workDone;
+    int coreNum{};
+    std::vector<Color> workDone;
 };
 
 inline bool operator<(const CoreWork& lhs, const CoreWork& rhs)
@@ -26,16 +23,16 @@ inline bool operator<(const CoreWork& lhs, const CoreWork& rhs)
 
 class Camera{
 private:
-    point3 camera_center;
-    point3 pixel_0_0_location;
+    Point3 camera_center;
+    Point3 pixel_0_0_location;
 
-    vec3 pixel_delta_u; // Offset to pixel to the right
-    vec3 pixel_delta_v; // Offset to pixel below
+    Vec3 pixel_delta_u; // Offset to pixel to the right
+    Vec3 pixel_delta_v; // Offset to pixel below
 
-    vec3 u, v, w; // Camera frame bases vectors
+    Vec3 u, v, w; // Camera frame bases vectors
 
-    vec3 defocus_disk_u;
-    vec3 defocus_disk_v;
+    Vec3 defocus_disk_u;
+    Vec3 defocus_disk_v;
 
     void initilize(){
         image_height = static_cast<int>(image_width / aspect_ratio);
@@ -55,8 +52,8 @@ private:
         v = cross(w, u);
 
         // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        vec3 viewport_u = viewport_width * u;    // Vector across viewport horizontal edge
-        vec3 viewport_v = viewport_height * -v;  // Vector down viewport vertical edge
+        Vec3 viewport_u = viewport_width * u;    // Vector across viewport horizontal edge
+        Vec3 viewport_v = viewport_height * -v;  // Vector down viewport vertical edge
 
         // Calculate the horizontal and vertical delta vectors to the next pixel.
         pixel_delta_u = viewport_u / image_width;
@@ -77,18 +74,18 @@ public:
     int image_width = 100; // Rendered image width in pixel count
     int image_height{}; // Rendered image height
     int samples_per_pixel = 10; // Count of random samples
-    int max_depth = 10; // Maximum number of ray bounces
+    int max_depth = 10; // Maximum number of Ray bounces
 
     double vfov = 90; // Vertical field of view
 
-    point3 lookfrom = point3(0.0f,0.0f,-1.0f); // Point camera is looking from
-    point3 lookat = point3(0.0f,0.0f,0.0f); // The target on which camera is looking at
-    vec3 vup = vec3(0.0f,1.0f,0.0f);
+    Point3 lookfrom = Point3(0.0f, 0.0f, -1.0f); // Point camera is looking from
+    Point3 lookat = Point3(0.0f, 0.0f, 0.0f); // The target on which camera is looking at
+    Vec3 vup = Vec3(0.0f, 1.0f, 0.0f);
 
     double defocus_angle = 0; // Variation angle of rays through each pixel
     double focus_dist = 10; // Distance from camera lookfrom position to the plane of perfect focus
 
-    color ray_color(const ray& r, const HittableList &world, int depth){
+    Color ray_color(const Ray& r, const HittableList &world, int depth){
         hit_record rec;
 
         if (depth <= 0){
@@ -96,8 +93,8 @@ public:
         }
 
         if (world.hit(r,  0.001f, infinity, rec)){
-            ray scattered;
-            color attenuation;
+            Ray scattered;
+            Color attenuation;
 
             if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
                 return attenuation * ray_color(scattered, world, depth - 1);
@@ -106,23 +103,23 @@ public:
             return {0.0f,0.0f,0.0f};
         }
 
-        vec3 unit_dir = unit_vector(r.GetDirection());
+        Vec3 unit_dir = unit_vector(r.GetDirection());
         double t = 0.5f * (unit_dir.y() + 1);
 
-        color pixel_color = (1.0-t)*color(1.0, 1.0, 1.0);
-        color pixel_color1 = t*color(0.5f, 0.7, 1.0);
+        Color pixel_color = (1.0 - t) * Color(1.0, 1.0, 1.0);
+        Color pixel_color1 = t * Color(0.5f, 0.7, 1.0);
 
         return pixel_color + pixel_color1;
     }
 
-    void render(const HittableList& world, std::map<size_t , std::vector<color>>& final_work) {
+    void render(const HittableList& world, std::map<size_t , std::vector<Color>>& final_work) {
         this->initilize();
 
         int cores_available = static_cast<int>(std::thread::hardware_concurrency());
 
         const int pixels_in_row_for_each_thread = image_height / cores_available;
 
-        std::map<size_t, BatchBoarder> work_among_cores;
+        std::map<int, BatchBoarder> work_among_cores;
         int image_height_intervals = 0;
 
         for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
@@ -155,12 +152,12 @@ public:
                         std::clog << core_work_progress;
 
                         for (int i = 0; i < this->image_width; ++i) {
-                            color pixel_color(0,0,0);
+                            Color pixel_color(0, 0, 0);
 
                             for (int sample = 0; sample < this->samples_per_pixel; ++sample) {
                                 // TODO: experiment with antialiasing for random [-1, 1)
 
-                                ray r = get_ray(i, j);
+                                Ray r = get_ray(i, j);
                                 pixel_color += ray_color(r, world, this->max_depth);
                                }
 
@@ -179,9 +176,9 @@ public:
         }
     }
 
-    [[nodiscard]] ray get_ray(int i, int j) const {
-        // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
-        // the camera defocus disk.
+    [[nodiscard]] Ray get_ray(int i, int j) const {
+        // Get a randomly-sampled camera Ray for the pixel at location i,j, originating from
+        // the camera defocus disk
 
         auto pixel_center = pixel_0_0_location + (i * pixel_delta_u) + (j * pixel_delta_v);
         auto pixel_sample = pixel_center + this->pixel_sample_square();
@@ -192,15 +189,15 @@ public:
         return {ray_origin, ray_direction};
     }
 
-    [[nodiscard]] point3 defocus_disk_sample() const {
-        // Returns a random point in the camera defocus disk.
+    [[nodiscard]] Point3 defocus_disk_sample() const {
+        // Returns a random point in the camera defocus disk
 
         auto p = random_in_unit_disk();
         return camera_center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
     }
 
-    [[nodiscard]] vec3 pixel_sample_square() const {
-        // Returns a random point in the square surrounding a pixel at the origin.
+    [[nodiscard]] Vec3 pixel_sample_square() const {
+        // Returns a random point in the square surrounding a pixel at the origin
 
         auto px = -0.5 + random_double();
         auto py = -0.5 + random_double();

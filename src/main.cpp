@@ -27,25 +27,25 @@ int main() {
     HittableList world = HittableList();
 
     auto ground_material = make_shared<Lambertian>(
-            color(0.5f, 0.5f, 0.5f));
+            Color(0.5f, 0.5f, 0.5f));
     world.add(make_shared<Sphere>(
-            point3(0.0f, -1000.0f, 0.0f), 1000, ground_material));
+            Point3(0.0f, -1000.0f, 0.0f), 1000, ground_material));
 
     for (int a = -11;a < 11;a++){
         for (int b = -11;b < 11;b++){
             double choose_mat = random_double();
 
-            point3 center(
+            Point3 center(
                     a + 0.9f*random_double(),
                     0.2f,
                     b + 0.9*random_double());
 
-            if ((center - point3(4.0f, 0.2f, 0.0f)).length() > 0.9f){
+            if ((center - Point3(4.0f, 0.2f, 0.0f)).length() > 0.9f){
                 shared_ptr<Material> sphere_material;
 
                 if (choose_mat < 0.8f){
                     // Lambertian
-                    color albedo = color::random() * color::random();
+                    Color albedo = Color::random() * Color::random();
                     sphere_material = make_shared<Lambertian>(albedo);
                     world.add(
                             make_shared<Sphere>(center, 0.2f, sphere_material)
@@ -53,7 +53,7 @@ int main() {
 
                 } else if (choose_mat < 0.95f){
                     // Metal
-                    color albedo = color::random(0.5f, 1.0f);
+                    Color albedo = Color::random(0.5f, 1.0f);
                     double fuzz = random_double(0.0f, 0.5f);
                     sphere_material = make_shared<Metal>(albedo, fuzz);
                     world.add(
@@ -72,15 +72,15 @@ int main() {
 
     auto material1 = make_shared<Dielectric>(1.5f);
     world.add(make_shared<Sphere>(
-            point3(0.0f, 1.0f, 0.0f), 1.0f, material1));
+            Point3(0.0f, 1.0f, 0.0f), 1.0f, material1));
 
-    auto material2 = make_shared<Lambertian>(color(0.4f, 0.2f, 0.1f));
+    auto material2 = make_shared<Lambertian>(Color(0.4f, 0.2f, 0.1f));
     world.add(make_shared<Sphere>(
-            point3(-4.0f, 1.0f, 0.0f), 1.0f, material2));
+            Point3(-4.0f, 1.0f, 0.0f), 1.0f, material2));
 
-    auto material3 = make_shared<Metal>(color(0.7f, 0.6f, 0.5f), 0.0f);
+    auto material3 = make_shared<Metal>(Color(0.7f, 0.6f, 0.5f), 0.0f);
     world.add(make_shared<Sphere>(
-            point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
+            Point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
 
     // Camera
     Camera cam;
@@ -91,14 +91,14 @@ int main() {
     cam.max_depth         = 50;
 
     cam.vfov     = 20;
-    cam.lookfrom = point3(13.0f,2.0f,3.0f);
-    cam.lookat   = point3(0.0f,0.0f,0.0f);
-    cam.vup      = vec3(0.0f,1.0f,0.0f);
+    cam.lookfrom = Point3(13.0f, 2.0f, 3.0f);
+    cam.lookat   = Point3(0.0f, 0.0f, 0.0f);
+    cam.vup      = Vec3(0.0f, 1.0f, 0.0f);
 
     cam.defocus_angle = 0.6f;
     cam.focus_dist    = 10.0;
 
-    std::map<size_t, std::vector<color>> final_result;
+    std::map<size_t, std::vector<Color>> final_result;
 
 
     auto t1 = std::chrono::high_resolution_clock::now();
