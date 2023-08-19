@@ -15,7 +15,7 @@ struct BatchBoarder{
 };
 
 struct CoreWork{
-    size_t coreNum;
+    size_t coreNum{};
     std::vector<color> workDone;
 };
 
@@ -23,8 +23,6 @@ inline bool operator<(const CoreWork& lhs, const CoreWork& rhs)
 {
     return lhs.coreNum < rhs.coreNum;
 }
-
-
 
 class Camera{
 private:
@@ -46,7 +44,6 @@ private:
         camera_center = lookfrom;
 
         // Determine viewport dimensions.
-        auto focal_length = (lookfrom - lookat).length();
         auto theta = degrees_to_radians(vfov);
         auto h = tan(theta/2);
         auto viewport_height = 2 * h * focus_dist;
@@ -78,7 +75,7 @@ private:
 public:
     double aspect_ratio = 1.0f; // Ratio of image: width / height
     int image_width = 100; // Rendered image width in pixel count
-    int image_height; // Rendered image height
+    int image_height{}; // Rendered image height
     int samples_per_pixel = 10; // Count of random samples
     int max_depth = 10; // Maximum number of ray bounces
 
@@ -126,18 +123,17 @@ public:
         const size_t pixels_in_row_for_each_thread = image_height / cores_available;
         const size_t left_over = image_height % cores_available;
 
-        // TODO: consider using std::unordered_map here
         std::map<size_t, BatchBoarder> work_among_cores;
         size_t image_height_intervals = 0;
 
         for(int current_core = 1 ; current_core < cores_available + 1 ; current_core++){
-            auto batch = BatchBoarder{};
+            auto batch_boarder = BatchBoarder{};
 
-            batch.yStart = image_height_intervals;
+            batch_boarder.yStart = image_height_intervals;
             image_height_intervals += pixels_in_row_for_each_thread;
-            batch.yEnd = image_height_intervals;
+            batch_boarder.yEnd = image_height_intervals;
 
-            work_among_cores[current_core] = batch;
+            work_among_cores[current_core] = batch_boarder;
         }
 
         std::vector<std::future<CoreWork>> future_vector;
@@ -145,33 +141,33 @@ public:
 
         for(const auto & [ core_num, batch ] :  work_among_cores){
             future_vector.emplace_back(
-                    std::async([batch, core_num, this, &world]{
-                       CoreWork cw;
-                       cw.coreNum = core_num;
+                std::async([batch, core_num, this, &world]{
+                    CoreWork cw;
+                    cw.coreNum = core_num;
 
-                       for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
-                           double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
+                    for (size_t j = batch.yStart; j < batch.yEnd; ++j) {
+                        double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
 
-                            std::clog << "\r[Thread " << core_num << "] "
-                            << "Scanlines calculated: " << raw_percentage * 100 << " %" << std::endl;
+                        std::string core_work_progress = "[Thread " + std::to_string(core_num) + "]" +
+                            " Rows calculated: " + std::to_string(raw_percentage * 100) + " %\n";
+                        std::clog << core_work_progress;
 
-                           for (size_t i = 0; i < this->image_width; ++i) {
+                        for (size_t i = 0; i < this->image_width; ++i) {
+                            color pixel_color(0,0,0);
 
-                               color pixel_color(0,0,0);
+                            for (int sample = 0; sample < this->samples_per_pixel; ++sample) {
+                                // TODO: experiment with antialiasing for random [-1, 1)
 
-                               for (int sample = 0; sample < this->samples_per_pixel; ++sample) {
-                                   // TODO: experiment with antialiasing for random [-1, 1)
-
-                                   ray r = get_ray(i, j);
-                                   pixel_color += ray_color(r, world, this->max_depth);
+                                ray r = get_ray(i, j);
+                                pixel_color += ray_color(r, world, this->max_depth);
                                }
 
-                               cw.workDone.push_back(pixel_color);
+                            cw.workDone.push_back(pixel_color);
                            }
                        }
 
-                       return cw;
-                    }
+                    return cw;
+                }
             ));
         }
 
@@ -183,7 +179,6 @@ public:
             for (auto &future: future_vector){
                 // Waiting for each future to finish its work and collecting results
 
-                // TODO: consider removing the 1st part of the if statement
                 if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready){
                     futures_ready++;
                 }
