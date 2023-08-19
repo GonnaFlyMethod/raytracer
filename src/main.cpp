@@ -1,86 +1,19 @@
 #include "common.h"
+#include "datetime.h"
 #include <chrono>
-#include <iomanip>
-#include <ctime>
-#include <sstream>
 #include "color.h"
 #include <fstream>
 #include "hittable_list.h"
-#include "sphere.h"
 #include "camera.h"
-#include "material.h"
+#include "adding_objects_to_world.h"
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
 
-std::string get_current_datetime(){
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
-
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S");
-    return oss.str();
-}
-
 int main() {
     // World
     HittableList world = HittableList();
-
-    auto ground_material = make_shared<Lambertian>(
-            Color(0.5f, 0.5f, 0.5f));
-    world.add(make_shared<Sphere>(
-            Point3(0.0f, -1000.0f, 0.0f), 1000, ground_material));
-
-    for (int a = -11;a < 11;a++){
-        for (int b = -11;b < 11;b++){
-            double choose_mat = random_double();
-
-            Point3 center(
-                    a + 0.9f*random_double(),
-                    0.2f,
-                    b + 0.9*random_double());
-
-            if ((center - Point3(4.0f, 0.2f, 0.0f)).length() > 0.9f){
-                shared_ptr<Material> sphere_material;
-
-                if (choose_mat < 0.8f){
-                    // Lambertian
-                    Color albedo = Color::random() * Color::random();
-                    sphere_material = make_shared<Lambertian>(albedo);
-                    world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
-                            );
-
-                } else if (choose_mat < 0.95f){
-                    // Metal
-                    Color albedo = Color::random(0.5f, 1.0f);
-                    double fuzz = random_double(0.0f, 0.5f);
-                    sphere_material = make_shared<Metal>(albedo, fuzz);
-                    world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
-                            );
-                } else{
-                    // Glass
-                    sphere_material = make_shared<Dielectric>(1.5);
-                    world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
-                            );
-                }
-            }
-        }
-    }
-
-    auto material1 = make_shared<Dielectric>(1.5f);
-    world.add(make_shared<Sphere>(
-            Point3(0.0f, 1.0f, 0.0f), 1.0f, material1));
-
-    auto material2 = make_shared<Lambertian>(Color(0.4f, 0.2f, 0.1f));
-    world.add(make_shared<Sphere>(
-            Point3(-4.0f, 1.0f, 0.0f), 1.0f, material2));
-
-    auto material3 = make_shared<Metal>(Color(0.7f, 0.6f, 0.5f), 0.0f);
-    world.add(make_shared<Sphere>(
-            Point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
+    add_objects_to_world(world);
 
     // Camera
     Camera cam;
@@ -99,7 +32,6 @@ int main() {
     cam.focus_dist    = 10.0;
 
     std::map<size_t, std::vector<Color>> final_result;
-
 
     auto t1 = std::chrono::high_resolution_clock::now();
     // Render

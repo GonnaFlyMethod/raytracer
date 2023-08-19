@@ -5,7 +5,6 @@
 #include "common.h"
 #include "material.h"
 
-
 struct BatchBoarder{
     int yStart;
     int yEnd;
