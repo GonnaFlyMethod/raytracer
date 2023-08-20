@@ -1,7 +1,5 @@
-#include "common_math.h"
 #include "main_helpers.h"
 #include <chrono>
-#include "hittable_list.h"
 #include "camera.h"
 
 // TODO:
@@ -16,7 +14,7 @@ int main() {
     Camera cam;
 
     cam.aspect_ratio      = 16.0f / 9.0f;
-    cam.image_width       = 100;
+    cam.image_width       = 640;
     cam.samples_per_pixel = 10;
     cam.max_depth         = 10;
 

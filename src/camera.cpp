@@ -1,7 +1,10 @@
 #include <future>
 
 #include "camera.h"
+
 #include "material.h"
+#include "vec3.h"
+#include "ray.h"
 
 void Camera::initilize(){
     image_height = static_cast<int>(image_width / aspect_ratio);

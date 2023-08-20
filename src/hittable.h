@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common_math.h"
+#include "vec3.h"
+#include "ray.h"
 #include <memory>
 
 class Material;

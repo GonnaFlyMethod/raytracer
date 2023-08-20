@@ -4,6 +4,8 @@
 #include <map>
 
 #include "common_math.h"
+#include "vec3.h"
+#include "ray.h"
 #include "hittable_list.h"
 
 struct BatchBoarder{
