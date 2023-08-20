@@ -1,19 +1,22 @@
 #pragma once
 
-#include "common.h"
+#include "common_math.h"
+#include "vec3.h"
+#include "ray.h"
+#include <memory>
 
 class Material;
 
 
 struct hit_record{
-    point3 p = point3(0.0f,0.0f,0.0f);
-    vec3 normal = vec3(0.0f, 0.0f, 0.0f);
-    shared_ptr<Material> mat_ptr;
+    Point3 p = Point3(0.0f, 0.0f, 0.0f);
+    Vec3 normal = Vec3(0.0f, 0.0f, 0.0f);
+    std::shared_ptr<Material> mat_ptr;
 
     double t = 0.0f;
     bool front_face = false;
 
-    inline void set_face_normal(const ray& r, vec3& outward_normal){
+    inline void set_face_normal(const Ray& r, Vec3& outward_normal){
         front_face = dot(r.GetDirection(), outward_normal) < 0;
         normal = front_face ? outward_normal: -outward_normal;
     }
@@ -22,5 +25,5 @@ struct hit_record{
 
 class Hittable{
 public:
-    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const = 0;
 };
