@@ -1,7 +1,13 @@
 #include "sphere.h"
 
+Point3 Sphere::center(double time) const {
+    return center1 + time*blending_vec_to_center2;
+}
+
 bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const{
-    Vec3 cr = r.GetOrigin() - this->center;
+    Point3 current_center = this->is_moving ? center(r.GetTime()) : center1;
+
+    Vec3 cr = r.GetOrigin() - current_center;
 
     double a = r.GetDirection().length_squared();
     double half_b = dot(cr, r.GetDirection());
@@ -26,7 +32,7 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
     rec.t = root;
     rec.p = r.at(rec.t);
 
-    Vec3 outward_normal = (rec.p - this->center) / this->radius;
+    Vec3 outward_normal = (rec.p - current_center) / this->radius;
 
     rec.set_face_normal(r, outward_normal);
 

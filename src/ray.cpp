@@ -9,6 +9,10 @@ Vec3 Ray::GetDirection() const {
     return direction;
 }
 
+double Ray::GetTime() const {
+    return time;
+}
+
 Point3 Ray::at(double t) const {
     auto directionWithMagnitude = t *direction;
     return (Point3&)origin + (Vec3&)directionWithMagnitude;

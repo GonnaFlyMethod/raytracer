@@ -143,7 +143,9 @@ Ray Camera::get_ray(int i, int j) const {
     auto ray_origin = (defocus_angle <= 0) ? camera_center : this->defocus_disk_sample();
     auto ray_direction = pixel_sample - ray_origin;
 
-    return {ray_origin, ray_direction};
+    double random_time = random_double();
+
+    return {ray_origin, ray_direction, random_time};
 }
 
 Point3 Camera::defocus_disk_sample() const {
