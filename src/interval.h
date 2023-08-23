@@ -1,11 +1,15 @@
 #pragma once
 
 class Interval {
-private:
+public:
     double min;
     double max;
-public:
+
     Interval(double mn, double mx): min(mn), max(mx){};
 
     bool contains(double x);
+
+    double size() const;
+
+    Interval expand(double delta) const;
 };

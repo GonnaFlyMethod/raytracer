@@ -30,8 +30,9 @@ void add_objects_to_world(HittableList& world){
                     // Lambertian
                     Color albedo = Color::random() * Color::random();
                     sphere_material = make_shared<Lambertian>(albedo);
+                    auto center2 = center + Vec3(0.0f, 0.5f, 0.0f);
                     world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
+                            make_shared<Sphere>(center, center2, 0.2f, sphere_material)
                     );
 
                 } else if (choose_mat < 0.95f){
