@@ -1,5 +1,28 @@
 #include "sphere.h"
 
+Sphere::Sphere(Point3 cen, double r, shared_ptr<Material> m):  center1(cen), radius(r), mat_ptr(m){
+    Vec3 radius_vec = Vec3(r, r, r);
+    this->bounding_box = AABB(cen - radius_vec, cen + radius_vec);
+}
+
+Sphere::Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m)
+    : center1(cen1),
+      radius(r),
+      mat_ptr(m),
+      is_moving(true),
+      blending_vec_to_center2(cen2 - cen1){
+
+    Vec3 rvec = Vec3(r,r,r);
+    AABB box1 = AABB(cen1 - rvec, cen1 + rvec);
+    AABB box2 = AABB(cen2 - rvec, cen2 + rvec);
+
+    this->bounding_box = AABB(box1, box2);
+}
+
+AABB Sphere::get_bounding_box() const{
+    return this->bounding_box;
+}
+
 Point3 Sphere::center(double time) const {
     return center1 + time*blending_vec_to_center2;
 }

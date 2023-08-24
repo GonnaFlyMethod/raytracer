@@ -13,19 +13,18 @@ private:
     double radius;
     shared_ptr<Material> mat_ptr;
 
+    AABB bounding_box;
+
     Point3 center(double time) const;
 
 public:
     // Stationary sphere
-    Sphere(Point3 cen, double r, shared_ptr<Material> m): center1(cen), radius(r), mat_ptr(m) {};
+    Sphere(Point3 cen, double r, shared_ptr<Material> m);
 
     // Moving sphere
-    Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m)
-        : center1(cen1),
-        radius(r),
-        mat_ptr(m),
-        is_moving(true),
-        blending_vec_to_center2(cen2 - cen1){};
+    Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m);
 
     virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+
+    virtual AABB get_bounding_box() const override;
 };
