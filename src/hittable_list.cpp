@@ -7,8 +7,13 @@ HittableList::HittableList(std::shared_ptr<Hittable> hittable_object){
     this->add(hittable_object);
 }
 
+AABB HittableList::get_bounding_box() const{
+    return this->bounding_box;
+}
+
 void HittableList::add(std::shared_ptr<Hittable> hittable_object) {
     this->objects.push_back(hittable_object);
+    this->bounding_box = AABB(this->bounding_box, hittable_object->get_bounding_box());
 }
 
 void HittableList::clear(){
