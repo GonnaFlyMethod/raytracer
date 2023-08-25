@@ -8,7 +8,7 @@ class AABB{
 public:
     Interval x = Interval(0, 0), y = Interval(0, 0), z = Interval(0, 0);
 
-    AABB();
+    AABB() = default;
 
     AABB(Interval& intervalX, Interval& intervalY, Interval& intervalZ)
         : x(intervalX), y(intervalY), z(intervalZ){};

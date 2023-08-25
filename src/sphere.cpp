@@ -27,7 +27,7 @@ Point3 Sphere::center(double time) const {
     return center1 + time*blending_vec_to_center2;
 }
 
-bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) const{
+bool Sphere::hit(const Ray& r, Interval ray_t, hit_record& rec) const{
     Point3 current_center = this->is_moving ? center(r.GetTime()) : center1;
 
     Vec3 cr = r.GetOrigin() - current_center;
@@ -44,10 +44,10 @@ bool Sphere::hit(const Ray& r, double t_min, double t_max, hit_record& rec) cons
 
     double root = (-half_b - sqrt(discriminant) ) / a;
 
-    if (root < t_min || root > t_max){
+    if (root < ray_t.min || root > ray_t.max){
         root = (-half_b + sqrt(discriminant) ) / a;
 
-        if (root < t_min || root > t_max){
+        if (root < ray_t.min || root > ray_t.max){
             return false;
         }
     }

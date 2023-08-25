@@ -26,7 +26,7 @@ struct hit_record{
 
 class Hittable{
 public:
-    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+    virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const = 0;
 
     virtual AABB get_bounding_box() const = 0;
 };

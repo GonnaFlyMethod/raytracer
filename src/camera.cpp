@@ -48,7 +48,9 @@ Color Camera::ray_color(const Ray &r, const HittableList &world, int depth) {
         return {0.0f,0.0f,0.0f};
     }
 
-    if (world.hit(r,  0.001f, infinity, rec)){
+    Interval hit_interval(0.001f, infinity);
+
+    if (world.hit(r, hit_interval, rec)){
         Ray scattered;
         Color attenuation;
 

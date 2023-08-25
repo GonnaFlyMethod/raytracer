@@ -24,7 +24,6 @@ public:
     // Moving sphere
     Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m);
 
-    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
-
+    virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const;
     virtual AABB get_bounding_box() const override;
 };
