@@ -5,6 +5,9 @@
 #include "vector"
 
 class HittableList: public Hittable  {
+private:
+    AABB bounding_box;
+
 public:
      std::vector<std::shared_ptr<Hittable>> objects;
 
@@ -15,5 +18,6 @@ public:
 
      void clear();
 
-    virtual bool hit(const Ray& r, double t_min, double t_max, hit_record& rec) const override;
+    virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override;
+    virtual AABB get_bounding_box() const override;
 };

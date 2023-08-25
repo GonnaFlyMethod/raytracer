@@ -48,7 +48,9 @@ Color Camera::ray_color(const Ray &r, const HittableList &world, int depth) {
         return {0.0f,0.0f,0.0f};
     }
 
-    if (world.hit(r,  0.001f, infinity, rec)){
+    Interval hit_interval(0.001f, infinity);
+
+    if (world.hit(r, hit_interval, rec)){
         Ray scattered;
         Color attenuation;
 
@@ -143,7 +145,9 @@ Ray Camera::get_ray(int i, int j) const {
     auto ray_origin = (defocus_angle <= 0) ? camera_center : this->defocus_disk_sample();
     auto ray_direction = pixel_sample - ray_origin;
 
-    return {ray_origin, ray_direction};
+    double random_time = random_double();
+
+    return {ray_origin, ray_direction, random_time};
 }
 
 Point3 Camera::defocus_disk_sample() const {
