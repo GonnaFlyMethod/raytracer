@@ -8,7 +8,7 @@ AABB::AABB(const Point3 &pointA, const Point3 &pointB) {
     this->z = Interval(fmin(pointA[2], pointB[2]), fmax(pointA[2], pointA[2]));
 }
 
-AABB::AABB(AABB &box1, AABB box2) {
+AABB::AABB(AABB box1, AABB box2) {
     this->x = Interval(box1.x, box2.x);
     this->y = Interval(box1.y, box2.y);
     this->z = Interval(box1.z, box2.z);

@@ -15,7 +15,7 @@ public:
 
     AABB(const Point3& pointA, const Point3& pointB);
 
-    AABB(AABB& box1,AABB box2);
+    AABB(AABB box1,AABB box2);
 
     const Interval& axis(int n) const;
 

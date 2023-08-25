@@ -18,5 +18,6 @@ public:
     BoundingVolumeNode(const std::vector<shared_ptr<Hittable>>& src_objects, size_t start, size_t end);
 
     virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override;
+    virtual AABB get_bounding_box() const override;
 };
 
