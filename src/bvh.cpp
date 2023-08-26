@@ -2,6 +2,7 @@
 
 #include "bvh.h"
 #include "common_math.h"
+#include "sphere.h"
 
 BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &src_objects, size_t start, size_t end) {
     auto objects = src_objects;
@@ -29,6 +30,7 @@ BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &
                   objects.begin() + end, comparator);
 
         auto mid = start + object_span / 2;
+
         this->left = make_shared<BoundingVolumeNode>(objects, start,mid);
         this->right = make_shared<BoundingVolumeNode>(objects, mid, end);
     }
