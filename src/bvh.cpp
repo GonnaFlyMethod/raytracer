@@ -41,6 +41,7 @@ bool BoundingVolumeNode::hit(const Ray &r, Interval ray_t, hit_record &rec) cons
         return false;
     }
 
+    // Actual hits of spheres
     bool hit_left = this->left->hit(r, ray_t, rec);
     bool hit_right = right->hit(r,Interval(ray_t.min, hit_left ? rec.t : ray_t.max), rec);
 
@@ -48,3 +49,19 @@ bool BoundingVolumeNode::hit(const Ray &r, Interval ray_t, hit_record &rec) cons
 }
 
 AABB BoundingVolumeNode::get_bounding_box() const {return bounding_box;}
+
+bool BoundingVolumeNode::axis_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axis){
+    return a->get_bounding_box().axis(axis).min < b->get_bounding_box().axis(axis).min;
+}
+
+bool BoundingVolumeNode::box_x_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 0);
+}
+
+bool BoundingVolumeNode::box_y_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 1);
+}
+
+bool BoundingVolumeNode::box_z_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 2);
+}

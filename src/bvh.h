@@ -19,5 +19,11 @@ public:
 
     virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override;
     virtual AABB get_bounding_box() const override;
+
+    static bool axis_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axis);
+
+    static bool box_x_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b);
+    static bool box_y_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b);
+    static bool box_z_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b);
 };
 
