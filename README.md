@@ -57,6 +57,10 @@ Depth of field effect:
 
 ![](./collection/dof_effect.png)
 
+Motion blur:
+
+![](./collection/motion_blur.png)
+
 Final result:
 
 ![](./collection/final_result.png)

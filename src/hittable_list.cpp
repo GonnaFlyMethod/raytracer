@@ -27,9 +27,7 @@ bool HittableList::hit(const Ray &r, Interval ray_t, hit_record &rec) const {
     double closest_so_far = ray_t.max;
 
     for(const auto& object: objects){
-        Interval new_interval(ray_t.min, closest_so_far);
-
-        if (object->hit(r, new_interval, tmp_record)){
+        if (object->hit(r, Interval(ray_t.min, closest_so_far), tmp_record)){
             hitted_some_object = true;
             closest_so_far = tmp_record.t;
             rec = tmp_record;
