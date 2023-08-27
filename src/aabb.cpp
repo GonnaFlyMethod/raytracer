@@ -3,9 +3,9 @@
 
 
 AABB::AABB(const Point3 &pointA, const Point3 &pointB) {
-    this->x = Interval(fmin(pointA[0], pointB[0]), fmax(pointA[0], pointA[0]));
-    this->y = Interval(fmin(pointA[1], pointB[1]), fmax(pointA[1], pointA[1]));
-    this->z = Interval(fmin(pointA[2], pointB[2]), fmax(pointA[2], pointA[2]));
+    this->x = Interval(fmin(pointA[0], pointB[0]), fmax(pointA[0], pointB[0]));
+    this->y = Interval(fmin(pointA[1], pointB[1]), fmax(pointA[1], pointB[1]));
+    this->z = Interval(fmin(pointA[2], pointB[2]), fmax(pointA[2], pointB[2]));
 }
 
 AABB::AABB(AABB box1, AABB box2) {

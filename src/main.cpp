@@ -1,6 +1,7 @@
 #include "main_helpers.h"
 #include <chrono>
 #include "camera.h"
+#include "bvh.h"
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -10,12 +11,14 @@ int main() {
     HittableList world = HittableList();
     add_objects_to_world(world);
 
+    world = HittableList(make_shared<BoundingVolumeNode>(world));
+
     // Camera
     Camera cam;
 
     cam.aspect_ratio      = 16.0f / 9.0f;
-    cam.image_width       = 400;
-    cam.samples_per_pixel = 100;
+    cam.image_width       = 640;
+    cam.samples_per_pixel = 50;
     cam.max_depth         = 50;
 
     cam.vfov     = 20;

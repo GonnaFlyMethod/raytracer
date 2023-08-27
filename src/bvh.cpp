@@ -1,10 +1,13 @@
+#include <algorithm>
+
 #include "bvh.h"
 #include "common_math.h"
+#include "sphere.h"
 
 BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &src_objects, size_t start, size_t end) {
     auto objects = src_objects;
 
-    int axis = random_double(0, 2);
+    int axis = random_int(0, 2);
     auto comparator = (axis == 0) ? box_x_compare:
                       (axis == 1) ? box_y_compare:
                       box_z_compare;
@@ -22,11 +25,12 @@ BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &
             this->right = objects[start];
         }
     }else{
-        auto objects_iterator = objects.begin();
         // TODO: remove addition of start in the 1st argument
-        std::sort(objects_iterator, objects_iterator + end, comparator);
+        std::sort(objects.begin() + start,
+                  objects.begin() + end, comparator);
 
         auto mid = start + object_span / 2;
+
         this->left = make_shared<BoundingVolumeNode>(objects, start,mid);
         this->right = make_shared<BoundingVolumeNode>(objects, mid, end);
     }
@@ -42,9 +46,25 @@ bool BoundingVolumeNode::hit(const Ray &r, Interval ray_t, hit_record &rec) cons
     }
 
     bool hit_left = this->left->hit(r, ray_t, rec);
-    bool hit_right = right->hit(r,Interval(ray_t.min, hit_left ? rec.t : ray_t.max), rec);
+    bool hit_right = this->right->hit(r,Interval(ray_t.min, hit_left ? rec.t : ray_t.max), rec);
 
     return hit_left || hit_right;
 }
 
 AABB BoundingVolumeNode::get_bounding_box() const {return bounding_box;}
+
+bool BoundingVolumeNode::axis_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axis_index){
+    return a->get_bounding_box().axis(axis_index).min < b->get_bounding_box().axis(axis_index).min;
+}
+
+bool BoundingVolumeNode::box_x_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 0);
+}
+
+bool BoundingVolumeNode::box_y_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 1);
+}
+
+bool BoundingVolumeNode::box_z_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+    return BoundingVolumeNode::axis_compare(a, b, 2);
+}
