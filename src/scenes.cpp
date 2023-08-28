@@ -1,17 +1,11 @@
-#include <ctime>
-#include <sstream>
-#include <iomanip>
-#include <map>
-#include <fstream>
-
-#include "hittable_list.h"
+#include "scenes.h"
+#include "texture.h"
 #include "material.h"
 #include "sphere.h"
-#include "texture.h"
 
-void add_objects_to_world(HittableList& world){
+void random_spheres(HittableList& world, Camera& cam){
     auto checker_texture = make_shared<CheckerTexture>(
-            0.8f, Color(0.2f, 0.3f, 0.1f), Color(0.9f, 0.9f, 0.9f));
+            0.32f, Color(0.2f, 0.3f, 0.1f), Color(0.9f, 0.9f, 0.9f));
 
     auto ground_material = make_shared<Lambertian>(checker_texture);
     world.add(make_shared<Sphere>(
@@ -68,46 +62,41 @@ void add_objects_to_world(HittableList& world){
     auto material3 = make_shared<Metal>(Color(0.7f, 0.6f, 0.5f), 0.0f);
     world.add(make_shared<Sphere>(
             Point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
+
+    cam.aspect_ratio      = 16.0f / 9.0f;
+    cam.image_width       = 320;
+    cam.samples_per_pixel = 25;
+    cam.max_depth         = 25;
+
+    cam.vfov     = 20;
+    cam.lookfrom = Point3(13.0f, 2.0f, 3.0f);
+    cam.lookat   = Point3(0.0f, 0.0f, 0.0f);
+    cam.vup      = Vec3(0.0f, 1.0f, 0.0f);
+
+    cam.defocus_angle = 0.6f;
+    cam.focus_dist    = 10.0;
+
 }
 
-std::string get_current_datetime(){
-    auto t = std::time(nullptr);
-    auto tm = *std::localtime(&t);
+void two_spheres(HittableList& world, Camera& cam){
+    auto checker_texture = make_shared<CheckerTexture>(
+            0.8f, Color(0.2f, 0.3f, 0.1f), Color(0.9f, 0.9f, 0.9f));
 
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y_%m_%d_%H_%M_%S");
-    return oss.str();
-}
+    auto ground_material = make_shared<Lambertian>(checker_texture);
 
-void write_colors_into_file(
-        std::map<size_t, std::vector<Color>>& final_result,
-        int samples_per_pixel, int image_width, int image_height){
-    std::string filename = "render_" + get_current_datetime() + ".ppm";
+    world.add(make_shared<Sphere>(
+            Point3(0.0f, -10.0f, 0.0f), 10, ground_material));
 
-    std::ofstream file_handler;
+    world.add(make_shared<Sphere>(
+            Point3(0.0f, 10.0f, 0.0f), 10, ground_material));
 
-    file_handler.open(filename, std::ios::out | std::ios::binary);
+    cam.aspect_ratio      = 16.0f / 9.0f;
+    cam.image_width       = 640;
+    cam.samples_per_pixel = 50;
+    cam.max_depth         = 50;
 
-    file_handler << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-    for(auto& [ core_num, pixels_batch ] :  final_result){
-        for (const auto& color : pixels_batch){
-
-            double scale = 1.0 / samples_per_pixel;
-
-            double r = color.x();
-            double g = color.y();
-            double b = color.z();
-
-            r = sqrt(r * scale);
-            g = sqrt(g * scale);
-            b = sqrt(b * scale);
-
-            file_handler << static_cast<int>(256 * clamp(r, 0, 0.999)) << ' '
-                << static_cast<int>(256 * clamp(g, 0, 0.999)) << ' '
-                << static_cast<int>(256 * clamp(b, 0, 0.999)) << '\n';
-        }
-    }
-
-    file_handler.close();
+    cam.vfov     = 20;
+    cam.lookfrom = Point3(13.0f, 2.0f, 3.0f);
+    cam.lookat   = Point3(0.0f, 0.0f, 0.0f);
+    cam.vup      = Vec3(0.0f, 1.0f, 0.0f);
 }

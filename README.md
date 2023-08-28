@@ -61,6 +61,10 @@ Motion blur:
 
 ![](./collection/motion_blur.png)
 
+Texture Mapping
+
+![](./collection/texture_mapping.png)
+
 Final result:
 
 ![](./collection/final_result.png)

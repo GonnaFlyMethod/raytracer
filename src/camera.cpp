@@ -41,6 +41,10 @@ void Camera::initilize(){
     defocus_disk_v = v * defocus_radius;
 }
 
+int Camera::get_calculated_image_height() const{
+    return image_height;
+}
+
 Color Camera::ray_color(const Ray &r, const HittableList &world, int depth) {
     hit_record rec;
 
