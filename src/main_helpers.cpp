@@ -7,10 +7,13 @@
 #include "hittable_list.h"
 #include "material.h"
 #include "sphere.h"
+#include "texture.h"
 
 void add_objects_to_world(HittableList& world){
-    auto ground_material = make_shared<Lambertian>(
-            Color(0.5f, 0.5f, 0.5f));
+    auto checker_texture = make_shared<CheckerTexture>(
+            0.8f, Color(0.2f, 0.3f, 0.1f), Color(0.9f, 0.9f, 0.9f));
+
+    auto ground_material = make_shared<Lambertian>(checker_texture);
     world.add(make_shared<Sphere>(
             Point3(0.0f, -1000.0f, 0.0f), 1000, ground_material));
 
