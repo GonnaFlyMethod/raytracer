@@ -2,6 +2,7 @@
 
 #include "common_math.h"
 #include "hittable.h"
+#include "texture.h"
 
 class Material{
 public:
@@ -11,9 +12,10 @@ public:
 
 class Lambertian: public Material{
 private:
-    Color albedo;
+    std::shared_ptr<Texture> albedo;
 public:
-    Lambertian(const Color& a): albedo(a){};
+    Lambertian(const std::shared_ptr<Texture>& c): albedo(c){};
+    Lambertian(Color c): albedo(std::make_shared<SolidColor>(c)){};
 
     virtual bool scatter(
             const Ray& r_in, const hit_record& rec, Color& attenuation, Ray& scattered) const override;

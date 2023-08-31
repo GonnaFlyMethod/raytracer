@@ -7,6 +7,7 @@
 #include "interval.h"
 #include "ray.h"
 
+// TODO reorganize class inheritance to avoid overhead from virtual tables
 
 class BoundingVolumeNode: public Hittable {
 private:

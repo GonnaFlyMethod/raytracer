@@ -16,6 +16,7 @@ struct hit_record{
 
     double t = 0.0f;
     bool front_face = false;
+    double u, v;
 
     inline void set_face_normal(const Ray& r, Vec3& outward_normal){
         front_face = dot(r.GetDirection(), outward_normal) < 0;

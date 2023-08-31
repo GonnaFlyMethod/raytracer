@@ -33,23 +33,26 @@ private:
     Vec3 defocus_disk_u;
     Vec3 defocus_disk_v;
 
+    int image_height; // Rendered image height (calculated via constructor of camera)
+
     void initilize();
 
 public:
-    double aspect_ratio; // Ratio of image: width / height
-    int image_width; // Rendered image width in pixel count
-    int image_height; // Rendered image height
-    int samples_per_pixel; // Count of random samples
-    int max_depth; // Maximum number of Ray bounces
+    double aspect_ratio = 1.0; // Ratio of image: width / height
+    int image_width = 100; // Rendered image width in pixel count
+    int samples_per_pixel = 10; // Count of random samples
+    int max_depth = 10; // Maximum number of Ray bounces
 
-    double vfov; // Vertical field of view
+    double vfov = 90; // Vertical field of view
 
-    Point3 lookfrom; // Point camera is looking from
-    Point3 lookat; // The target on which camera is looking at
-    Vec3 vup;
+    Point3 lookfrom = Point3(0.0f, 0.0f, -1.0f); // Point camera is looking from
+    Point3 lookat = Point3(0.0f, 1.0f, 0.0f); // The target on which camera is looking at
+    Vec3 vup = Vec3(0.0f, 1.0f, 0.0f);
 
-    double defocus_angle; // Variation angle of rays through each pixel
-    double focus_dist; // Distance from camera lookfrom position to the plane of perfect focus
+    double defocus_angle = 0.0f; // Variation angle of rays through each pixel
+    double focus_dist = 10.0f; // Distance from camera lookfrom position to the plane of perfect focus
+
+    int get_calculated_image_height() const;
 
     Color ray_color(const Ray& r, const HittableList &world, int depth);
 
@@ -59,4 +62,3 @@ public:
     [[nodiscard]] Point3 defocus_disk_sample() const;
     [[nodiscard]] Vec3 pixel_sample_square() const;
 };
-
