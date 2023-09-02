@@ -17,6 +17,16 @@ private:
 
     Point3 center(double time) const;
 
+    // p: A point on unit sphere with radius one. The sphere is centered at the origin
+    // The point is given in Cartesian coordinates
+    // u: returned value [0; 1] of angle around Y axis from X = -1
+    // v: returned value [0; 1] of angle from Y=-1 to Y=1;
+
+    //     <X: 1, Y: 0, Z: 0> yields <u: 0.50, v: 0.50>       <X: -1, Y: 0, Z: 0> yields <u: 0.00, v: 0.50>
+    //     <X: 0, Y: 1, Z: 0> yields <u: 0.50, v: 1.00>       <X: 0, Y: -1, Z: 0> yields <u: 0.50, v: 0.00>
+    //     <X: 0, Y: 0, Z: 1> yields <u: 0.25, v: 0.50>        <X: 0, Y: 0, Z: -1> yields <u: 0.75, v: 0.50>
+    static void get_sphere_uv(const Point3& p, double& u, double& v);
+
 public:
     // Stationary sphere
     Sphere(Point3 cen, double r, shared_ptr<Material> m);

@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "common_math.h"
 
 Sphere::Sphere(Point3 cen, double r, shared_ptr<Material> m):  center1(cen), radius(r), mat_ptr(m){
     Vec3 radius_vec = Vec3(r, r, r);
@@ -18,6 +19,15 @@ Sphere::Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m)
 
     this->bounding_box = AABB(box1, box2);
 }
+
+void Sphere::get_sphere_uv(const Point3 &p, double &u, double &v) {
+    double phi = atan2(-p.z(), p.x()) + pi;
+    double theta = acos(-p.y());
+
+    u = phi / (2*pi);
+    v = theta / pi;
+}
+
 
 AABB Sphere::get_bounding_box() const{
     return this->bounding_box;
@@ -58,7 +68,7 @@ bool Sphere::hit(const Ray& r, Interval ray_t, hit_record& rec) const{
     Vec3 outward_normal = (rec.p - current_center) / this->radius;
 
     rec.set_face_normal(r, outward_normal);
-
+    this->get_sphere_uv(rec.p, rec.u, rec.v);
     rec.mat_ptr = this->mat_ptr;
 
     return true;
