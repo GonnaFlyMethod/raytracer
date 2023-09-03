@@ -13,6 +13,9 @@ private:
     const int bytes_per_pixel = 3;
     int image_width, image_height;
     int bytes_per_scanline;
+
+    // Returns value in the range [low, max)
+    static int clamp(int x, int low, int max);
 public:
     ImageLoader(): data(nullptr);
     ImageLoader(std::string& path_to_file);
@@ -23,6 +26,6 @@ public:
     int get_image_width();
     int get_image_height();
 
-    const unsigned char* get_data(int x, int y) const;
+    const unsigned char* get_pixel_data(int x, int y) const;
 };
 
