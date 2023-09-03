@@ -5,7 +5,7 @@
 #include "bvh.h"
 #include "scenes.h"
 
-#define MAX_NUM_OF_SCENES 2;
+#define MAX_NUM_OF_SCENES 3;
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -35,12 +35,17 @@ int main(int argc, char** argv) {
 
     switch (scene_to_draw) {
         case 2:
-            std::clog << "2 Spheres will be drawn" << std::endl;
+            std::clog << "2 Spheres will be drawn" << '\n';
 
             two_spheres(world, cam);
             break;
+        case 3:
+            std::clog << "Lambertian sphere with Earth texture will be drawn" << '\n';
+
+            earth(world, cam);
+            break;
         default:
-            std::clog << "Random spheres will be drawn(default scene)" << std::endl;
+            std::clog << "Random spheres will be drawn(default scene)" << '\n';
 
             random_spheres(world, cam);
             break;
@@ -52,17 +57,17 @@ int main(int argc, char** argv) {
 
     auto t1 = std::chrono::high_resolution_clock::now();
 
-    std::clog << "Rendering colors of pixels..." << std::endl;
+    std::clog << "Rendering colors of pixels..." << '\n';
     cam.render(world, final_result);
 
-    std::clog << "Constructing image..." << std::endl;
+    std::clog << "Constructing image..." << '\n';
     write_colors_into_file(
             final_result, cam.samples_per_pixel, cam.image_width, cam.get_calculated_image_height());
 
     auto t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> ms_double = t2 - t1;
 
-    std::clog << "The whole process of rendering took: "<< ms_double.count() / 1000 << "s " << std::endl;
+    std::clog << "The whole process of rendering took: "<< ms_double.count() / 1000 << "s " << '\n';
 
     return 0;
 }

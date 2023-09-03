@@ -1,13 +1,7 @@
 #pragma once
-
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_FAILURE_USERMSG
-
-#include "external/stb_image.h"
-
 #include <string>
 
-class ImageLoader {
+class ImageWrapper {
 private:
     unsigned char *data;
     const int bytes_per_pixel = 3;
@@ -17,14 +11,14 @@ private:
     // Returns value in the range [low, max)
     static int clamp(int x, int low, int max);
 public:
-    ImageLoader(): data(nullptr);
-    ImageLoader(std::string& path_to_file);
-    ~ImageLoader();
+    ImageWrapper(): data(nullptr){};
+    ImageWrapper(std::string filename);
+    ~ImageWrapper();
 
-    bool load(std::string& filename);
+    bool load(std::string path_to_file);
 
-    int get_image_width();
-    int get_image_height();
+    int get_image_width() const;
+    int get_image_height() const;
 
     const unsigned char* get_pixel_data(int x, int y) const;
 };

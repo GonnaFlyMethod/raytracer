@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "vec3.h"
+#include "image_wrapper.h"
 
 // TODO: refactor the structure of inheritance for textures
 
@@ -34,6 +35,17 @@ public:
         : inv_scale(1.0f / scale),
         even(std::make_shared<SolidColor>(c1)),
         odd(std::make_shared<SolidColor>(c2)){};
+
+    Color value(double u, double v, const Point3& p) const override;
+};
+
+
+class ImageTexture: public Texture{
+private:
+    ImageWrapper image;
+
+public:
+    ImageTexture(std::string filename);
 
     Color value(double u, double v, const Point3& p) const override;
 };
