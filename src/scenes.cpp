@@ -104,7 +104,8 @@ void two_spheres(HittableList& world, Camera& cam){
 void earth(HittableList& world, Camera& cam){
     auto earth_texture = make_shared<ImageTexture>("earthmap.jpg");
     auto earth_surface = make_shared<Lambertian>(earth_texture);
-    auto earth_sphere = make_shared<Sphere>(Point3(0.0f, 0.0f, 0.0f), 2, earth_surface);
+    world.add(
+            make_shared<Sphere>(Point3(0.0f, 0.0f, 0.0f), 2, earth_surface));
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;

@@ -18,7 +18,7 @@ Color CheckerTexture::value(double u, double v, const Point3 &p) const {
 ImageTexture::ImageTexture(std::string filename): image(filename){}
 
 Color ImageTexture::value(double u, double v, const Point3 &p) const {
-    if(this->image.get_image_width() <= 0) return {0.0f, 1.0f, 1.0f} /* Cyan */;
+    if(this->image.get_image_height() <= 0) return {0.0f, 1.0f, 1.0f} /* Cyan */;
 
     u = clamp(u, 0.0f, 1.0f);
     v = 1.0f - clamp(v, 0.0f, 1.0f);  // Flip V to image coordinates
@@ -28,8 +28,8 @@ Color ImageTexture::value(double u, double v, const Point3 &p) const {
 
     auto pixel_data = this->image.get_pixel_data(i,j);
 
-    // Tweak the value to make sure that this is brightness of texture
-    double color_scale = 1.0f / 255.0;
-
-    return {color_scale * pixel_data[0], color_scale *pixel_data[1], color_scale * pixel_data[2]};
+    double color_intensity = 1.0f / 255.0f;
+    return {color_intensity * pixel_data[0],
+            color_intensity * pixel_data[1],
+            color_intensity * pixel_data[2]};
 }

@@ -21,8 +21,8 @@ Sphere::Sphere(Point3 cen1, Point3 cen2, double r, shared_ptr<Material> m)
 }
 
 void Sphere::get_sphere_uv(const Point3 &p, double &u, double &v) {
-    double phi = atan2(-p.z(), p.x()) + pi;
     double theta = acos(-p.y());
+    double phi = atan2(-p.z(), p.x()) + pi;
 
     u = phi / (2*pi);
     v = theta / pi;
@@ -68,7 +68,7 @@ bool Sphere::hit(const Ray& r, Interval ray_t, hit_record& rec) const{
     Vec3 outward_normal = (rec.p - current_center) / this->radius;
 
     rec.set_face_normal(r, outward_normal);
-    this->get_sphere_uv(rec.p, rec.u, rec.v);
+    this->get_sphere_uv(outward_normal, rec.u, rec.v);
     rec.mat_ptr = this->mat_ptr;
 
     return true;
