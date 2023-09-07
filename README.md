@@ -6,9 +6,9 @@ By implementing the ideas & concepts from the book, I'm teaching myself
 how do raytracers work in practice and what underlying principles and math are
 used to create cool looking scenes.
 
-Final result:
+Rendered spheres:
 
-![](./collection/final_result.png)
+![](./collection/rendered_spheres.png)
 
 # Building the project
 This project uses cmake as a build system. `CMakeLists.txt` should be utilized to generate cmake-related directory. For example, CLion IDE offers to pick the path to `CMakeLists.txt`
@@ -57,14 +57,17 @@ Depth of field effect:
 
 ![](./collection/dof_effect.png)
 
+Rendered spheres:
+
+![](./collection/rendered_spheres.png)
+
 Motion blur:
 
 ![](./collection/motion_blur.png)
 
-Texture Mapping:
+Checker texture:
 
-![](./collection/texture_mapping.png)
+![](./collection/checker_texture.png)
 
-Final result:
-
-![](./collection/final_result.png)
+Earth texture mapping:
+![](./collection/earth_texture_mapping.png)
