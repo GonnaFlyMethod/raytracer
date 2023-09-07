@@ -109,7 +109,7 @@ void earth(HittableList& world, Camera& cam){
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;
-    cam.samples_per_pixel = 25;
+    cam.samples_per_pixel = 50;
     cam.max_depth = 50;
 
     cam.vfov = 20;

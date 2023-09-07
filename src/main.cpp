@@ -55,9 +55,9 @@ int main(int argc, char** argv) {
 
     std::map<size_t, std::vector<Color>> final_result;
 
-    auto t1 = std::chrono::high_resolution_clock::now();
-
     std::clog << "Rendering colors of pixels..." << '\n';
+
+    auto t1 = std::chrono::high_resolution_clock::now();
     cam.render(world, final_result);
 
     std::clog << "Constructing image..." << '\n';

@@ -22,7 +22,7 @@ ImageWrapper::ImageWrapper(std::string filename) {
     if (load("../../../../../textures/" + filename)) return;
     if (load("../../../../../../textures/" + filename)) return;
 
-    std::cerr << "Erorr occurred while loading file: " << filename << '\n';
+    std::cerr << "Error occurred while loading file: " << filename << '\n';
 }
 
 bool ImageWrapper::load(std::string path_to_file) {
