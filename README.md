@@ -61,9 +61,12 @@ Motion blur:
 
 ![](./collection/motion_blur.png)
 
-Texture Mapping:
+Checker texture:
 
-![](./collection/texture_mapping.png)
+![](./collection/checker_texture.png)
+
+Earth texture mapping:
+![](./collection/earth_texture_mapping.png)
 
 Final result:
 
