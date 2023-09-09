@@ -5,6 +5,8 @@
 
 void random_spheres(HittableList& world, Camera& cam);
 
-void two_spheres(HittableList& world, Camera& cam);
+void two_spheres_with_checker_texture(HittableList& world, Camera& cam);
 
 void earth(HittableList& world, Camera& cam);
+
+void two_spheres_with_perlin_texture(HittableList& world, Camera& cam);

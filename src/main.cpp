@@ -5,7 +5,7 @@
 #include "bvh.h"
 #include "scenes.h"
 
-#define MAX_NUM_OF_SCENES 3;
+#define MAX_NUM_OF_SCENES 4;
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -35,14 +35,19 @@ int main(int argc, char** argv) {
 
     switch (scene_to_draw) {
         case 2:
-            std::clog << "2 Spheres will be drawn" << '\n';
+            std::clog << "2 Spheres with checker texture will be drawn" << '\n';
 
-            two_spheres(world, cam);
+            two_spheres_with_checker_texture(world, cam);
             break;
         case 3:
             std::clog << "Lambertian sphere with Earth texture will be drawn" << '\n';
 
             earth(world, cam);
+            break;
+        case 4:
+            std::clog << "2 Spheres with perlin texture will be drawn" << '\n';
+
+            two_spheres_with_perlin_texture(world, cam);
             break;
         default:
             std::clog << "Random spheres will be drawn(default scene)" << '\n';

@@ -17,6 +17,9 @@ private:
 
     Point3 center(double time) const;
 
+
+    // TODO: test the function output with a different input
+
     // p: A point on unit sphere with radius one. The sphere is centered at the origin
     // The point is given in Cartesian coordinates
     // u: returned value [0; 1] of angle around Y axis from X = -1

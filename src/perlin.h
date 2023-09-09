@@ -18,6 +18,5 @@ private:
 public:
     Perlin();
     ~Perlin();
-    double noise(const Point3& p);
+    double noise(const Point3& p) const;
 };
-

@@ -15,7 +15,7 @@ Perlin::Perlin() {
 }
 
 Perlin::~Perlin() {
-    delete[] this-> ranfloat;
+    delete[] this->ranfloat;
     delete[] this->perm_x;
     delete[] this->perm_y;
     delete[] this->perm_z;
@@ -33,16 +33,16 @@ int *Perlin::perlin_generate_permutations() {
         int tmp = p[i];
 
         p[i] = p[target];
-        p[target] = p[tmp];
+        p[target] = tmp;
     }
 
     return p;
 }
 
-double Perlin::noise(const Point3& p){
-    int i = static_cast<int>((4 * p.x())) & 255;
-    int j = static_cast<int>((4 * p.y())) & 255;
-    int k = static_cast<int>((4 * p.z())) & 255;
+double Perlin::noise(const Point3& p) const{
+    int i = static_cast<int>(8 * p.x()) & 255;
+    int j = static_cast<int>(8 * p.y()) & 255;
+    int k = static_cast<int>(8 * p.z()) & 255;
 
     return ranfloat[perm_x[i] ^ perm_y[j] ^ perm_z[k]];
 }

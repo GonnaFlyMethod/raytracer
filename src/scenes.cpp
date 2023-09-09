@@ -9,7 +9,7 @@ void random_spheres(HittableList& world, Camera& cam){
 
     auto ground_material = make_shared<Lambertian>(checker_texture);
     world.add(make_shared<Sphere>(
-            Point3(0.0f, -1000.0f, 0.0f), 1000, ground_material));
+            Point3(0.0f, -1000.0f, 0.0f), 1000.0f, ground_material));
 
     for (int a = -11;a < 11;a++){
         for (int b = -11;b < 11;b++){
@@ -42,7 +42,7 @@ void random_spheres(HittableList& world, Camera& cam){
                     );
                 } else{
                     // Glass
-                    sphere_material = make_shared<Dielectric>(1.5);
+                    sphere_material = make_shared<Dielectric>(1.5f);
                     world.add(
                             make_shared<Sphere>(center, 0.2f, sphere_material)
                     );
@@ -78,17 +78,17 @@ void random_spheres(HittableList& world, Camera& cam){
 
 }
 
-void two_spheres(HittableList& world, Camera& cam){
+void two_spheres_with_checker_texture(HittableList& world, Camera& cam){
     auto checker_texture = make_shared<CheckerTexture>(
             0.8f, Color(0.2f, 0.3f, 0.1f), Color(0.9f, 0.9f, 0.9f));
 
     auto ground_material = make_shared<Lambertian>(checker_texture);
 
     world.add(make_shared<Sphere>(
-            Point3(0.0f, -10.0f, 0.0f), 10, ground_material));
+            Point3(0.0f, -10.0f, 0.0f), 10.0f, ground_material));
 
     world.add(make_shared<Sphere>(
-            Point3(0.0f, 10.0f, 0.0f), 10, ground_material));
+            Point3(0.0f, 10.0f, 0.0f), 10.0f, ground_material));
 
     cam.aspect_ratio      = 16.0f / 9.0f;
     cam.image_width       = 640;
@@ -105,7 +105,7 @@ void earth(HittableList& world, Camera& cam){
     auto earth_texture = make_shared<ImageTexture>("earthmap.jpg");
     auto earth_surface = make_shared<Lambertian>(earth_texture);
     world.add(
-            make_shared<Sphere>(Point3(0.0f, 0.0f, 0.0f), 2, earth_surface));
+            make_shared<Sphere>(Point3(0.0f, 0.0f, 0.0f), 2.0f, earth_surface));
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;
@@ -116,6 +116,28 @@ void earth(HittableList& world, Camera& cam){
     cam.lookfrom = Point3(0.0f, 0.0f, 12.0f);
     cam.lookat = Point3(0.0f, 0.0f, 0.0f);
     cam.vup = Vec3(0.0f, 1.0f, 0.0f);
+
+    cam.defocus_angle = 0;
+}
+
+void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
+    auto perlin_texture = make_shared<PerlinTexture>();
+    auto lambertian_material = make_shared<Lambertian>(perlin_texture);
+
+    world.add(make_shared<Sphere>(
+            Point3(0.0f, -1000.0f, 0.0f), 1000.0f, lambertian_material));
+    world.add(make_shared<Sphere>(
+            Point3(0.0f, 2.0f, 0.0f), 2.0f, lambertian_material));
+
+    cam.aspect_ratio = 16.0f / 9.0f;
+    cam.image_width = 1280;
+    cam.samples_per_pixel = 50;
+    cam.max_depth = 50;
+
+    cam.vfov = 20;
+    cam.lookfrom = Point3(13.0f, 2.0f, 3.0f);
+    cam.lookat = Point3(0.0f, 0.0f, 0.0f);
+    cam.vup = Vec3(0.0f ,1.0f, 0.0f);
 
     cam.defocus_angle = 0;
 }

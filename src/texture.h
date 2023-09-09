@@ -4,6 +4,7 @@
 
 #include "vec3.h"
 #include "image_wrapper.h"
+#include "perlin.h"
 
 // TODO: refactor the structure of inheritance for textures
 
@@ -47,5 +48,13 @@ private:
 public:
     ImageTexture(std::string filename);
 
+    Color value(double u, double v, const Point3& p) const override;
+};
+
+class PerlinTexture: public Texture{
+private:
+    Perlin perlin_noise;
+
+public:
     Color value(double u, double v, const Point3& p) const override;
 };
