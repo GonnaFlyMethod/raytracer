@@ -40,9 +40,29 @@ int *Perlin::perlin_generate_permutations() {
 }
 
 double Perlin::noise(const Point3& p) const{
-    int i = static_cast<int>(8 * p.x()) & 255;
-    int j = static_cast<int>(8 * p.y()) & 255;
-    int k = static_cast<int>(8 * p.z()) & 255;
+    double u = p.x() - std::floor(p.x());
+    double v = p.y() - std::floor(p.y());
+    double w = p.z() - std::floor(p.z());
+
+    int i = static_cast<int>(floor(p.x()));
+    int j = static_cast<int>(floor(p.y()));
+    int k = static_cast<int>(floor(p.z()));
+
+    double c[2][2][2];
+
+    for (int di = 0; di < 2;di++){
+        for (int dj = 0; dj < 2; dj++){
+            for (int dk = 0; dk < 2;dk++){
+                c[di][dj][dk] = this->ranfloat[
+                    perm_x[(i+di) & 255] ^
+                    perm_y[(j+dj) & 255] ^
+                    perm_z[(k+dk) & 255]
+                ];
+            }
+        }
+    }
+
+    // TODO: return value from trilinear interpolation
 
     return ranfloat[perm_x[i] ^ perm_y[j] ^ perm_z[k]];
 }
