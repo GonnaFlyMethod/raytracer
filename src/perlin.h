@@ -19,4 +19,5 @@ public:
     Perlin();
     ~Perlin();
     double noise(const Point3& p) const;
+    static double trilinear_interpolation(double c[0][0][0], double u, double v, double w);
 };

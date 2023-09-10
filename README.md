@@ -70,4 +70,9 @@ Checker texture:
 ![](./collection/checker_texture.png)
 
 Earth texture mapping:
+
 ![](./collection/earth_texture_mapping.png)
+
+Perlin texture:
+
+![](./collection/perlin_texture.png)
