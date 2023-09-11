@@ -66,3 +66,10 @@ double Perlin::noise(const Point3& p) const{
 
     return ranfloat[perm_x[i] ^ perm_y[j] ^ perm_z[k]];
 }
+
+// The linear interpolation can be described in the following general formula:
+// B*(t) + A*(1-t), where's A is the starting point of interpolation and B is the end point:
+
+// 10(A)________________________________25(B)
+
+// + in linear interpolation plays the same role in the trilinear one
