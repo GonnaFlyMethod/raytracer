@@ -155,8 +155,20 @@ double Perlin::noise(const Point3& p) const{
 //          (k*w + (1-k)*(1-w))*c[i][j][k]
 //
 // So on each iteration we're calculating percentage of contribution for each cube's corner and multiplying
-// the percentage on the perlin  sample and then add contribution of each cube's corner together. So,
-// + sign in linear interpolation plays the same role in the trilinear one (in our case + is accum +=).
+// the percentage on the perlin  sample and then add contribution of each cube's corner together.
+// Number of iteration = number of cube's corner:
+//
+//       4 o--------o 8
+//        /|       /|
+//       / |      / |
+//   3  o------7-o  |
+//      |  o-2---|--o 6
+//      | /      | /
+//      |/       |/
+//    1 o--------o 5
+//
+// Additionally, + sign in linear interpolation plays the same role in the
+// trilinear one (in our case + is accum +=).
 
 double Perlin::trilinear_interpolation(double c[2][2][2], double u, double v, double w) {
     double accum = 0.0;
