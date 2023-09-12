@@ -37,5 +37,6 @@ Color ImageTexture::value(double u, double v, const Point3 &p) const {
 PerlinTexture::PerlinTexture(double scaler): frequency_scaler(scaler){};
 
 Color PerlinTexture::value(double u, double v, const Point3 &p) const {
-    return Color(1.0f,1.0f,1.0f) * this->perlin_noise.noise(this->frequency_scaler * p);
+    double final_color_modifier = 0.5f * (1.0 + this->perlin_noise.noise(this->frequency_scaler * p));
+    return Color(1.0f,1.0f,1.0f) * final_color_modifier;
 }

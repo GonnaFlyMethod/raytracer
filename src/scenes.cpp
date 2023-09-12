@@ -130,7 +130,7 @@ void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
             Point3(0.0f, 2.0f, 0.0f), 2.0f, lambertian_material));
 
     cam.aspect_ratio = 16.0f / 9.0f;
-    cam.image_width = 680;
+    cam.image_width = 1280;
     cam.samples_per_pixel = 50;
     cam.max_depth = 50;
 

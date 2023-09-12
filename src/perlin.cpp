@@ -3,10 +3,10 @@
 
 
 Perlin::Perlin() {
-    this->ranfloat = new double[Perlin::point_count];
+    this->random_vec = new Vec3[Perlin::point_count];
 
     for (int i = 0;i < Perlin::point_count;i++){
-        ranfloat[i] = random_double();
+        random_vec[i] = unit_vector(Vec3::random(-1, 1));
     }
 
     this->perm_x = perlin_generate_permutations();
@@ -15,7 +15,7 @@ Perlin::Perlin() {
 }
 
 Perlin::~Perlin() {
-    delete[] this->ranfloat;
+    delete[] this->random_vec;
     delete[] this->perm_x;
     delete[] this->perm_y;
     delete[] this->perm_z;
@@ -52,12 +52,12 @@ double Perlin::noise(const Point3& p) const{
     int j = static_cast<int>(floor(p.y()));
     int k = static_cast<int>(floor(p.z()));
 
-    double c[2][2][2];
+    Vec3 c[2][2][2];
 
     for (int di = 0; di < 2;di++){
         for (int dj = 0; dj < 2; dj++){
             for (int dk = 0; dk < 2;dk++){
-                c[di][dj][dk] = this->ranfloat[
+                c[di][dj][dk] = this->random_vec[
                     perm_x[(i+di) & 255] ^
                     perm_y[(j+dj) & 255] ^
                     perm_z[(k+dk) & 255]
@@ -66,7 +66,7 @@ double Perlin::noise(const Point3& p) const{
         }
     }
 
-    return trilinear_interpolation(c, u, v, w);
+    return trilinear_interpolation(c, u, v, w);;
 }
 
 // The linear interpolation can be described in the following general formula:
@@ -174,15 +174,17 @@ double Perlin::noise(const Point3& p) const{
 // Additionally, + sign in linear interpolation plays the same role in the
 // trilinear one (in our case + is accum +=).
 
-double Perlin::trilinear_interpolation(double c[2][2][2], double u, double v, double w) {
+double Perlin::trilinear_interpolation(Vec3 c[2][2][2], double u, double v, double w) {
     double accum = 0.0;
 
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 2; j++){
             for(int k = 0;k < 2; k++){
+                Vec3 weight(u-i, v-j, w-k);
+
                 accum += (u * i + (1 - i) * (1 - u)) *
                          (v * j + (1 - j) * (1 - v)) *
-                         (w * k + (1 - k) * (1 - w)) * c[i][j][k];
+                         (w * k + (1 - k) * (1 - w)) * dot(weight, c[i][j][k]);
             }
         }
     }

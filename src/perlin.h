@@ -8,7 +8,7 @@
 class Perlin {
 private:
     static const int point_count = 256;
-    double* ranfloat;
+    Vec3* random_vec;
     int* perm_x;
     int* perm_y;
     int* perm_z;
@@ -19,5 +19,5 @@ public:
     Perlin();
     ~Perlin();
     double noise(const Point3& p) const;
-    static double trilinear_interpolation(double c[2][2][2], double u, double v, double w);
+    static double trilinear_interpolation(Vec3 c[2][2][2], double u, double v, double w);
 };
