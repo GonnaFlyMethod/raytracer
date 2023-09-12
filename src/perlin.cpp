@@ -62,14 +62,114 @@ double Perlin::noise(const Point3& p) const{
         }
     }
 
-    // TODO: return value from trilinear interpolation
-
-    return ranfloat[perm_x[i] ^ perm_y[j] ^ perm_z[k]];
+    return trilinear_interpolation(c, u, v, w);
 }
 
 // The linear interpolation can be described in the following general formula:
-// B*(t) + A*(1-t), where's A is the starting point of interpolation and B is the end point:
+// B*(t) + A*(1-t), where's A is the starting point of interpolation and B is the end point.
+// The t parameter shows the percentage in the range [A;B], where's t = 0 will yield A and t = 1 will yield
+//  B. Suppose we have the following interval:
 
 // 10(A)________________________________25(B)
+// and we want to know what's the value in the middle of 10 and 25. Well, for this purpose we're
+// using t parameter from the formula, but now it will be 0.5:
+// A = 10,
+// B = 25
+// t = 0.5
+// value = 25 * 0.5 + 10 * (1 - 0.5) = 17.5
 
-// + in linear interpolation plays the same role in the trilinear one
+// basically you can think about this formula (B*(t) + A*(1-t)) in the following way:
+// 10(A)_______________x(t=0.5)________________25(B)
+// while t = 0.5, A side and B side contribute equally to the final value, so while performing
+// 1 - t in the formula you're still getting 0.5 -> 0.5 * A + 0.5 * A. This means "take contribution of A and add it
+// to the contribution of B". Note that A and B can anything: colors, sounds, etc. but in this case we're dealing with
+// abstract numbers. Let's assum that t=0.7
+// 10(A)____________________________x(0.7)___________25(B)
+// then this yield 20.5 as a value. It means: B contributes to the the final value on 70% while
+// A is contributing on 30%, that's why we're flipping percentage in the formula -> 1-t.
+
+// This was 1 dimension. In trilinear interpolation we're dealing with 3 dimensions. Each dimension contributes
+// to the final result. In our case we're dealing with trilinear interpolation in the context of perlin samples.
+// Think about the whole process as a cube. We have 8 perlin samples, so let's place this samples at the each corner of
+// the cube. Basically, perlin samples are just doubles in the interval [0,1). where 0.2 will result eventually in a
+// pretty dark color (almost black) and 0.9 will be near white. So we have generated the following samples:
+//     0.2 o--------o 0.9
+//        /|       /|
+//       / |      / |
+//  0.7 o----0.8-o  |
+//      |  o-0.1-|--o 0.5
+//      | /      | /
+//      |/       |/
+//  0.5 o--------o 0.1
+
+// u, v and w shows us our position in the cube x = u, v = y, z = w. All of them are clamped naturally in the interval
+// [0;1). Let u(aka x) = 0.78, v(aka y) = 0.22 and w(aka z) = 0.33. Then the nearest cube's corner for us will be this one:
+
+//     o--------o
+//    /|       /|
+//   / |      / |
+//  o--------o  |
+//  |  o-----|--o
+//  | /      | /
+//  |/       |/
+//  o--------o <- this one
+
+// This perlin sample(0.1) will contribute to the final result more than any other one.
+// Now what does accum += (i*u + (1-i)*(1-u))*
+//                            (j*v + (1-j)*(1-v))*
+//                            (k*w + (1-k)*(1-w))*c[i][j][k] mean?
+// It can be dived onto 2 parts the percentage of contribution of each perlin sample:
+// (i*u + (1-i)*(1-u))*
+// (j*v + (1-j)*(1-v))*
+// (k*w + (1-k)*(1-w))
+//
+// and the perlin samples itself:
+// c[i][j][k]
+
+// think about it in this way. We're calculating the percentage of contribution of each corner based on
+// u(aka x), v(aka y), w(aka z). For examples for u = 0.78, v = 0.22, w = 0.3 the contribution percentage will
+// be the following:
+//   0.014 o--------o 0.05
+//        /|       /|
+//       / |      / |
+// 0.03 o---0.12-o  |
+//      |  o-0.05|--o 0.1825
+//      | /      | /
+//      |/       |/
+// 0.120o--------o 0.425 <- pay attention how this corner contributes more to the final result
+// All percentages should form 1 while summed together. Now, this percentages are multiplied with perlin samples:
+
+//      P0.014 * S0.2 o-----------------o P0.05 * S0.9
+//                   /|                /|
+//                  / |               / |
+//    P0.03 * S0.7 o------P0.12*S0.8-o  |
+//                 |  o-P0.05*S0.1---|--o P0.1825 * S0.5
+//                 | /               |  /
+//                 |/                | /
+//                 |                 |/
+//     P0.5*S0.120 o-----------------o  P0.425 * S0.1
+//
+// P denotes percentage of contribution and S denotes perlin sample.
+// accum += (i*u + (1-i)*(1-u))*
+//          (j*v + (1-j)*(1-v))*
+//          (k*w + (1-k)*(1-w))*c[i][j][k]
+//
+// So on each iteration we're calculating percentage of contribution for each cube's corner and multiplying
+// the percentage on the perlin  sample and then add contribution of each cube's corner together. So,
+// + sign in linear interpolation plays the same role in the trilinear one (in our case + is accum +=).
+
+double Perlin::trilinear_interpolation(double c[2][2][2], double u, double v, double w) {
+    double accum = 0.0;
+
+    for (int i = 0; i < 2; i++){
+        for (int j = 0; j < 2; j++){
+            for(int k = 0;k < 2; k++){
+                accum += (u * i + (1 - i) * (1 - u)) *
+                         (v * j + (1 - j) * (1 - v)) *
+                         (w * k + (1 - k) * (1 - w)) * c[i][j][k];
+            }
+        }
+    }
+
+    return accum;
+}
