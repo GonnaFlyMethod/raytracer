@@ -54,7 +54,10 @@ public:
 class PerlinTexture: public Texture{
 private:
     Perlin perlin_noise;
+    double frequency_scaler;
 
 public:
+    PerlinTexture();
+    PerlinTexture(double frequency_scaler);
     Color value(double u, double v, const Point3& p) const override;
 };

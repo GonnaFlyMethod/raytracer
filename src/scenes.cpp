@@ -121,7 +121,7 @@ void earth(HittableList& world, Camera& cam){
 }
 
 void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
-    auto perlin_texture = make_shared<PerlinTexture>();
+    auto perlin_texture = make_shared<PerlinTexture>(8.0f);
     auto lambertian_material = make_shared<Lambertian>(perlin_texture);
 
     world.add(make_shared<Sphere>(
