@@ -74,6 +74,8 @@ double Perlin::noise(const Point3& p) const{
 // https://medium.com/@alex.husakou/trilinear-interpolation-for-perlin-noise-samples-raytracing-next-week-df1c6dabe597
 // To understand how the trilinear interpolation works
 
+// Find out: Is pixel a discrete point or a quad with X[0;1] and Y[0;1]
+
 double Perlin::trilinear_interpolation(Vec3 c[2][2][2], double u, double v, double w) {
     double accum = 0.0;
 
