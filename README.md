@@ -73,6 +73,9 @@ Earth texture mapping:
 
 ![](./collection/earth_texture_mapping.png)
 
-Perlin texture:
+Perlin texture(noise version):
 
 ![](./collection/perlin_texture.png)
+
+Perlin texture(gradient version) with sin(x) phases:
+![](./collection/perlin_noise_gradient_with_phases_texture.png)

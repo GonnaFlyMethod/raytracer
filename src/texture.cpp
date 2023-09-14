@@ -38,5 +38,6 @@ PerlinTexture::PerlinTexture(double scaler): frequency_scaler(scaler){};
 
 Color PerlinTexture::value(double u, double v, const Point3 &p) const {
     Point3 scaler =  this->frequency_scaler * p;
-    return Color(1.0f,1.0f,1.0f) * this->perlin_noise.turbulence(scaler);
+    double turbulence_with_phases = 0.5f * (1.0f + sin(scaler.z() + 10.0f*this->perlin_noise.turbulence(scaler)));
+    return Color(1.0f,1.0f,1.0f) * turbulence_with_phases;
 }

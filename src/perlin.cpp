@@ -96,15 +96,15 @@ double Perlin::trilinear_interpolation(Vec3 c[2][2][2], double u, double v, doub
 
 
 double Perlin::turbulence(const Point3 &p, int depth) const {
-    double accum = 0.0;
+    double accum = 0.0f;
     Point3 temp_p = p;
-    double weight = 0.5;
+    double weight = 1.0f;
 
     for (int i = 0; i < depth; i++){
         accum += weight*this->noise(temp_p);
-        weight *= 0.5;
-        temp_p *= 2;
-    };
+        weight *= 0.5f;
+        temp_p *= 2.0f;
+    }
 
     return fabs(accum);
 }
