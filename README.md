@@ -70,4 +70,12 @@ Checker texture:
 ![](./collection/checker_texture.png)
 
 Earth texture mapping:
+
 ![](./collection/earth_texture_mapping.png)
+
+Perlin texture(noise version):
+
+![](./collection/perlin_texture.png)
+
+Perlin texture(gradient version) with turbulence and sin(x) phases:
+![](./collection/perlin_noise_gradient_with_phases_texture.png)

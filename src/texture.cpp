@@ -6,13 +6,13 @@ Color SolidColor::value(double u, double v, const Point3 &p) const {
 }
 
 Color CheckerTexture::value(double u, double v, const Point3 &p) const {
-    int x = static_cast<int>(std::floor(p.x() * inv_scale));
-    int y = static_cast<int>(std::floor(p.y() * inv_scale));
-    int z = static_cast<int>(std::floor(p.z() * inv_scale));
+    int x = static_cast<int>(std::floor(p.x() * this->inv_scale));
+    int y = static_cast<int>(std::floor(p.y() * this->inv_scale));
+    int z = static_cast<int>(std::floor(p.z() * this->inv_scale));
 
     bool is_even = (x + y + z) % 2 == 0;
 
-    return is_even ? even->value(u, v, p) : odd->value(u, v, p);
+    return is_even ? this->even->value(u, v, p) : this->odd->value(u, v, p);
 }
 
 ImageTexture::ImageTexture(std::string filename): image(filename){}
@@ -32,4 +32,12 @@ Color ImageTexture::value(double u, double v, const Point3 &p) const {
     return {color_intensity * pixel_data[0],
             color_intensity * pixel_data[1],
             color_intensity * pixel_data[2]};
+}
+
+PerlinTexture::PerlinTexture(double scaler): frequency_scaler(scaler){};
+
+Color PerlinTexture::value(double u, double v, const Point3 &p) const {
+    Point3 scaler =  this->frequency_scaler * p;
+    double turbulence_with_phases = 0.5f * (1.0f + sin(scaler.z() + 10.0f*this->perlin_noise.turbulence(scaler)));
+    return Color(1.0f,1.0f,1.0f) * turbulence_with_phases;
 }

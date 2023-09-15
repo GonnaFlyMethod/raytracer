@@ -109,7 +109,7 @@ void Camera::render(const HittableList &world, std::map<size_t, std::vector<Colo
                 for (int j = batch.yStart; j < batch.yEnd; ++j) {
                     double raw_percentage = static_cast<double>(j) / static_cast<double>(this->image_height);
 
-                    std::string core_work_progress = "[Core " + std::to_string(core_num) + "]" +
+                    std::string core_work_progress = "[CPU Core " + std::to_string(core_num) + "]" +
                         " Rows calculated: " + std::to_string(raw_percentage * 100) + " %\n";
 
                     std::clog << core_work_progress;
