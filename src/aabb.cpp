@@ -48,3 +48,13 @@ bool AABB::hit(const Ray &r, Interval &ray_t) const {
 
     return true;
 }
+
+AABB AABB::expand_box_on_small_delta_if_needed() const {
+    double delta = 0.0001f;
+
+    Interval new_x = this->x.size() >= delta ? this->x : this->x.expand(delta);
+    Interval new_y = this->x.size() >= delta ? this->x : this->x.expand(delta);
+    Interval new_z = this->x.size() >= delta ? this->x : this->x.expand(delta);
+
+    return {new_x, new_y, new_z};
+}

@@ -18,6 +18,7 @@ public:
     AABB(AABB box1,AABB box2);
 
     const Interval& axis(int n) const;
-
     bool hit(const Ray& r,Interval& ray_t) const;
+
+    AABB expand_box_on_small_delta_if_needed() const;
 };
