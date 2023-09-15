@@ -1,7 +1,7 @@
 #include "scenes.h"
 #include "texture.h"
 #include "material.h"
-#include "sphere.h"
+#include "primitives/sphere.h"
 
 void random_spheres(HittableList& world, Camera& cam){
     auto checker_texture = make_shared<CheckerTexture>(

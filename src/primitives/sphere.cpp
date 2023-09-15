@@ -1,5 +1,5 @@
 #include "sphere.h"
-#include "common_math.h"
+#include "../common_math.h"
 
 Sphere::Sphere(Point3 cen, double r, shared_ptr<Material> m):  center1(cen), radius(r), mat_ptr(m){
     Vec3 radius_vec = Vec3(r, r, r);

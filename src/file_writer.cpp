@@ -6,7 +6,7 @@
 
 #include "hittable_list.h"
 #include "material.h"
-#include "sphere.h"
+#include "primitives/sphere.h"
 #include "texture.h"
 
 std::string get_current_datetime(){
