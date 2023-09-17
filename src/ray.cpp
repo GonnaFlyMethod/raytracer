@@ -14,6 +14,6 @@ double Ray::GetTime() const {
 }
 
 Point3 Ray::at(double t) const {
-    auto directionWithMagnitude = t *direction;
-    return (Point3&)origin + (Vec3&)directionWithMagnitude;
+    auto direction_with_magnitude = t * direction;
+    return (Point3&)origin + (Vec3&)direction_with_magnitude;
 }

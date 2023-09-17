@@ -8,8 +8,11 @@ class Quad: public Hittable {
 private:
     Point3 q_point;
     Vec3 u, v;
-    std::shared_ptr<Material> mat;
+    std::shared_ptr<Material> mat_ptr;
     AABB box;
+
+    Vec3 normal;
+    double constant_in_plane_equation;
 
 public:
     Quad(Point3 q, Vec3 _u, Vec3 _v);
