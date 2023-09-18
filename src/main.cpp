@@ -1,9 +1,10 @@
 #include <chrono>
+#include <memory>
 
 #include "file_writer.h"
 #include "camera.h"
-#include "bvh.h"
 #include "scenes.h"
+#include "bvh.h"
 
 #define MAX_NUM_OF_SCENES 4;
 
@@ -56,9 +57,9 @@ int main(int argc, char** argv) {
             break;
     }
 
-    world = HittableList(make_shared<BoundingVolumeNode>(world));
+    world = HittableList(std::make_shared<BoundingVolumeNode>(world));
 
-    std::map<size_t, std::vector<Color>> final_result;
+    std::map<size_t, std::vector<CommonMath::Color>> final_result;
 
     std::clog << "Rendering colors of pixels..." << '\n';
 

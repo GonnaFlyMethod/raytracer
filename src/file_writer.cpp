@@ -4,10 +4,8 @@
 #include <map>
 #include <fstream>
 
-#include "hittable_list.h"
-#include "material.h"
-#include "primitives/sphere.h"
-#include "texture.h"
+#include "common_math/vec3.h"
+#include "common_math/other.h"
 
 std::string get_current_datetime(){
     auto t = std::time(nullptr);
@@ -19,7 +17,7 @@ std::string get_current_datetime(){
 }
 
 void write_colors_into_file(
-        std::map<size_t, std::vector<Color>>& final_result,
+        std::map<size_t, std::vector<CommonMath::Color>>& final_result,
         int samples_per_pixel, int image_width, int image_height){
     std::string filename = "render_" + get_current_datetime() + ".ppm";
 
@@ -42,9 +40,9 @@ void write_colors_into_file(
             g = sqrt(g * scale);
             b = sqrt(b * scale);
 
-            file_handler << static_cast<int>(256 * clamp(r, 0, 0.999)) << ' '
-                << static_cast<int>(256 * clamp(g, 0, 0.999)) << ' '
-                << static_cast<int>(256 * clamp(b, 0, 0.999)) << '\n';
+            file_handler << static_cast<int>(256 * CommonMath::clamp(r, 0, 0.999)) << ' '
+                << static_cast<int>(256 * CommonMath::clamp(g, 0, 0.999)) << ' '
+                << static_cast<int>(256 * CommonMath::clamp(b, 0, 0.999)) << '\n';
         }
     }
 

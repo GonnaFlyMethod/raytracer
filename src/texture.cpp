@@ -1,11 +1,11 @@
 #include "texture.h"
-#include "common_math.h"
+#include "./common_math/other.h"
 
-Color SolidColor::value(double u, double v, const Point3 &p) const {
+CommonMath::Color SolidColor::value(double u, double v, const CommonMath::Point3 &p) const {
     return this->color_value;
 }
 
-Color CheckerTexture::value(double u, double v, const Point3 &p) const {
+CommonMath::Color CheckerTexture::value(double u, double v, const CommonMath::Point3 &p) const {
     int x = static_cast<int>(std::floor(p.x() * this->inv_scale));
     int y = static_cast<int>(std::floor(p.y() * this->inv_scale));
     int z = static_cast<int>(std::floor(p.z() * this->inv_scale));
@@ -17,11 +17,11 @@ Color CheckerTexture::value(double u, double v, const Point3 &p) const {
 
 ImageTexture::ImageTexture(std::string filename): image(filename){}
 
-Color ImageTexture::value(double u, double v, const Point3 &p) const {
+CommonMath::Color ImageTexture::value(double u, double v, const CommonMath::Point3 &p) const {
     if(this->image.get_image_height() <= 0) return {0.0f, 1.0f, 1.0f} /* Cyan */;
 
-    u = clamp(u, 0.0f, 1.0f);
-    v = 1.0f - clamp(v, 0.0f, 1.0f);  // Flip V to image coordinates
+    u = CommonMath::clamp(u, 0.0f, 1.0f);
+    v = 1.0f - CommonMath::clamp(v, 0.0f, 1.0f);  // Flip V to image coordinates
 
     int i = static_cast<int>(this->image.get_image_width() * u);
     int j = static_cast<int>(this->image.get_image_height() * v);
@@ -36,8 +36,8 @@ Color ImageTexture::value(double u, double v, const Point3 &p) const {
 
 PerlinTexture::PerlinTexture(double scaler): frequency_scaler(scaler){};
 
-Color PerlinTexture::value(double u, double v, const Point3 &p) const {
-    Point3 scaler =  this->frequency_scaler * p;
+CommonMath::Color PerlinTexture::value(double u, double v, const CommonMath::Point3 &p) const {
+    CommonMath::Point3 scaler =  this->frequency_scaler * p;
     double turbulence_with_phases = 0.5f * (1.0f + sin(scaler.z() + 10.0f*this->perlin_noise.turbulence(scaler)));
-    return Color(1.0f,1.0f,1.0f) * turbulence_with_phases;
+    return CommonMath::Color(1.0f,1.0f,1.0f) * turbulence_with_phases;
 }

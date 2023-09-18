@@ -1,13 +1,14 @@
 #pragma once
 
-#include "common_math.h"
+#include "common_math/random.h"
 #include "hittable.h"
+#include "common_math/other.h"
 #include "texture.h"
 
 class Material{
 public:
     virtual bool scatter(
-            const Ray& r_in, const hit_record & rec, Color& attenuation, Ray& scattered) const = 0;
+            const CommonMath::Ray& r_in, const hit_record & rec, CommonMath::Color& attenuation, CommonMath::Ray& scattered) const = 0;
 };
 
 class Lambertian: public Material{
@@ -15,21 +16,21 @@ private:
     std::shared_ptr<Texture> albedo;
 public:
     Lambertian(const std::shared_ptr<Texture>& c): albedo(c){};
-    Lambertian(Color c): albedo(std::make_shared<SolidColor>(c)){};
+    Lambertian(CommonMath::Color c): albedo(std::make_shared<SolidColor>(c)){};
 
     virtual bool scatter(
-            const Ray& r_in, const hit_record& rec, Color& attenuation, Ray& scattered) const override;
+            const CommonMath::Ray& r_in, const hit_record& rec, CommonMath::Color& attenuation, CommonMath::Ray& scattered) const override;
 };
 
 class Metal: public Material{
 private:
-    Color albedo;
+    CommonMath::Color albedo;
     double fuzz;
 public:
-    Metal(const Color& a, double f): albedo(a), fuzz(clamp(f, -1.0f, 1.0f)){}
+    Metal(const CommonMath::Color& a, double f): albedo(a), fuzz(CommonMath::clamp(f, -1.0f, 1.0f)){}
 
     virtual bool scatter(
-            const Ray& r_in, const hit_record & rec, Color& attenuation, Ray& scattered) const override;
+            const CommonMath::Ray& r_in, const hit_record & rec, CommonMath::Color& attenuation, CommonMath::Ray& scattered) const override;
 };
 
 
@@ -45,5 +46,5 @@ public:
     Dielectric(double ior): index_of_refraction(ior){}
 
     virtual bool scatter(
-            const Ray& r_in, const hit_record & rec, Color& attenuation, Ray& scattered) const override;
+            const CommonMath::Ray& r_in, const hit_record & rec, CommonMath::Color& attenuation, CommonMath::Ray& scattered) const override;
 };

@@ -18,6 +18,6 @@ public:
 
      void clear();
 
-    virtual bool hit(const Ray& r, Interval ray_t, hit_record& rec) const override;
+    virtual bool hit(const CommonMath::Ray& r, Interval ray_t, hit_record& rec) const override;
     virtual AABB get_bounding_box() const override;
 };

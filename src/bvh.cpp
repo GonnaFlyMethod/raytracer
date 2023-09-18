@@ -1,13 +1,12 @@
-#include <algorithm>
-
 #include "bvh.h"
-#include "common_math.h"
-#include "primitives/sphere.h"
+#include "common_math/random.h"
+#include "common_math/ray.h"
+#include "aabb.h"
 
-BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &src_objects, size_t start, size_t end) {
+BoundingVolumeNode::BoundingVolumeNode(const std::vector<std::shared_ptr<Hittable>> &src_objects, size_t start, size_t end) {
     auto objects = src_objects;
 
-    int axis = random_int(0, 2);
+    int axis = CommonMath::random_int(0, 2);
     auto comparator = (axis == 0) ? box_x_compare:
                       (axis == 1) ? box_y_compare:
                       box_z_compare;
@@ -31,8 +30,8 @@ BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &
 
         auto mid = start + object_span / 2;
 
-        this->left = make_shared<BoundingVolumeNode>(objects, start,mid);
-        this->right = make_shared<BoundingVolumeNode>(objects, mid, end);
+        this->left = std::make_shared<BoundingVolumeNode>(objects, start,mid);
+        this->right = std::make_shared<BoundingVolumeNode>(objects, mid, end);
     }
 
     this->bounding_box = AABB(
@@ -40,7 +39,7 @@ BoundingVolumeNode::BoundingVolumeNode(const std::vector<shared_ptr<Hittable>> &
             this->right->get_bounding_box());
 }
 
-bool BoundingVolumeNode::hit(const Ray &r, Interval ray_t, hit_record &rec) const {
+bool BoundingVolumeNode::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
     if (!this->bounding_box.hit(r, ray_t)){
         return false;
     }
@@ -53,18 +52,18 @@ bool BoundingVolumeNode::hit(const Ray &r, Interval ray_t, hit_record &rec) cons
 
 AABB BoundingVolumeNode::get_bounding_box() const {return bounding_box;}
 
-bool BoundingVolumeNode::axis_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b, int axis_index){
+bool BoundingVolumeNode::axis_compare(const std::shared_ptr<Hittable> a, const std::shared_ptr<Hittable> b, int axis_index){
     return a->get_bounding_box().axis(axis_index).min < b->get_bounding_box().axis(axis_index).min;
 }
 
-bool BoundingVolumeNode::box_x_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+bool BoundingVolumeNode::box_x_compare(const std::shared_ptr<Hittable> a, const std::shared_ptr<Hittable> b) {
     return BoundingVolumeNode::axis_compare(a, b, 0);
 }
 
-bool BoundingVolumeNode::box_y_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+bool BoundingVolumeNode::box_y_compare(const std::shared_ptr<Hittable> a, const std::shared_ptr<Hittable> b) {
     return BoundingVolumeNode::axis_compare(a, b, 1);
 }
 
-bool BoundingVolumeNode::box_z_compare(const shared_ptr<Hittable> a, const shared_ptr<Hittable> b) {
+bool BoundingVolumeNode::box_z_compare(const std::shared_ptr<Hittable> a, const std::shared_ptr<Hittable> b) {
     return BoundingVolumeNode::axis_compare(a, b, 2);
 }
