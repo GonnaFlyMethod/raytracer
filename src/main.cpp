@@ -6,7 +6,7 @@
 #include "scenes.h"
 #include "bvh.h"
 
-#define MAX_NUM_OF_SCENES 4;
+#define MAX_NUM_OF_SCENES 5;
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -49,6 +49,11 @@ int main(int argc, char** argv) {
             std::clog << "2 Spheres with perlin texture will be drawn" << '\n';
 
             two_spheres_with_perlin_texture(world, cam);
+            break;
+        case 5:
+            std::clog << "5 quads will be drawn" << '\n';
+
+            quads(world, cam);
             break;
         default:
             std::clog << "Random spheres will be drawn(default scene)" << '\n';

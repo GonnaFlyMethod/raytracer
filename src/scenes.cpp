@@ -1,13 +1,14 @@
 #include "scenes.h"
 #include "material.h"
 #include "sphere.h"
+#include "quad.h"
 
 void random_spheres(HittableList& world, Camera& cam){
     auto checker_texture = std::make_shared<CheckerTexture>(
             0.32f, CommonMath::Color(0.2f, 0.3f, 0.1f), CommonMath::Color(0.9f, 0.9f, 0.9f));
 
-    auto ground_material = make_shared<Lambertian>(checker_texture);
-    world.add(make_shared<Sphere>(
+    auto ground_material = std::make_shared<Lambertian>(checker_texture);
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, -1000.0f, 0.0f), 1000.0f, ground_material));
 
     for (int a = -11;a < 11;a++){
@@ -28,7 +29,7 @@ void random_spheres(HittableList& world, Camera& cam){
                     sphere_material = std::make_shared<Lambertian>(albedo);
                     auto center2 = center + CommonMath::Vec3(0.0f, 0.5f, 0.0f);
                     world.add(
-                            make_shared<Sphere>(center, center2, 0.2f, sphere_material)
+                            std::make_shared<Sphere>(center, center2, 0.2f, sphere_material)
                     );
 
                 } else if (choose_mat < 0.95f){
@@ -37,13 +38,13 @@ void random_spheres(HittableList& world, Camera& cam){
                     double fuzz = CommonMath::random_double(0.0f, 0.5f);
                     sphere_material = std::make_shared<Metal>(albedo, fuzz);
                     world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
+                            std::make_shared<Sphere>(center, 0.2f, sphere_material)
                     );
                 } else{
                     // Glass
                     sphere_material = std::make_shared<Dielectric>(1.5f);
                     world.add(
-                            make_shared<Sphere>(center, 0.2f, sphere_material)
+                            std::make_shared<Sphere>(center, 0.2f, sphere_material)
                     );
                 }
             }
@@ -51,15 +52,15 @@ void random_spheres(HittableList& world, Camera& cam){
     }
 
     auto material1 = std::make_shared<Dielectric>(1.5f);
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, 1.0f, 0.0f), 1.0f, material1));
 
     auto material2 = std::make_shared<Lambertian>(CommonMath::Color(0.4f, 0.2f, 0.1f));
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(-4.0f, 1.0f, 0.0f), 1.0f, material2));
 
     auto material3 = std::make_shared<Metal>(CommonMath::Color(0.7f, 0.6f, 0.5f), 0.0f);
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
 
     cam.aspect_ratio      = 16.0f / 9.0f;
@@ -81,12 +82,12 @@ void two_spheres_with_checker_texture(HittableList& world, Camera& cam){
     auto checker_texture = std::make_shared<CheckerTexture>(
             0.8f, CommonMath::Color(0.2f, 0.3f, 0.1f), CommonMath::Color(0.9f, 0.9f, 0.9f));
 
-    auto ground_material = make_shared<Lambertian>(checker_texture);
+    auto ground_material = std::make_shared<Lambertian>(checker_texture);
 
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, -10.0f, 0.0f), 10.0f, ground_material));
 
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, 10.0f, 0.0f), 10.0f, ground_material));
 
     cam.aspect_ratio      = 16.0f / 9.0f;
@@ -102,9 +103,9 @@ void two_spheres_with_checker_texture(HittableList& world, Camera& cam){
 
 void earth(HittableList& world, Camera& cam){
     auto earth_texture = std::make_shared<ImageTexture>("earthmap.jpg");
-    auto earth_surface = make_shared<Lambertian>(earth_texture);
+    auto earth_surface = std::make_shared<Lambertian>(earth_texture);
     world.add(
-            make_shared<Sphere>(CommonMath::Point3(0.0f, 0.0f, 0.0f), 2.0f, earth_surface));
+            std::make_shared<Sphere>(CommonMath::Point3(0.0f, 0.0f, 0.0f), 2.0f, earth_surface));
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;
@@ -121,11 +122,11 @@ void earth(HittableList& world, Camera& cam){
 
 void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
     auto perlin_texture = std::make_shared<PerlinTexture>(4.0f);
-    auto lambertian_material = make_shared<Lambertian>(perlin_texture);
+    auto lambertian_material = std::make_shared<Lambertian>(perlin_texture);
 
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, -1000.0f, 0.0f), 1000.0f, lambertian_material));
-    world.add(make_shared<Sphere>(
+    world.add(std::make_shared<Sphere>(
             CommonMath::Point3(0.0f, 2.0f, 0.0f), 2.0f, lambertian_material));
 
     cam.aspect_ratio = 16.0f / 9.0f;
@@ -137,6 +138,63 @@ void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
     cam.lookfrom = CommonMath::Point3(13.0f, 2.0f, 3.0f);
     cam.lookat = CommonMath::Point3(0.0f, 0.0f, 0.0f);
     cam.vup = CommonMath::Vec3(0.0f ,1.0f, 0.0f);
+
+    cam.defocus_angle = 0;
+}
+
+void quads(HittableList& world, Camera& cam){
+    auto left_red = std::make_shared<Lambertian>(
+            CommonMath::Color(0.1f, 0.2f, 0.2f));
+    auto back_green = std::make_shared<Lambertian>(
+            CommonMath::Color(0.2f, 1.0f, 0.2f));
+    auto right_blue = std::make_shared<Lambertian>(
+            CommonMath::Color(0.2f, 0.2f, 1.0f));
+    auto upper_orange = std::make_shared<Lambertian>(
+            CommonMath::Color(1.0f, 0.5f, 0.0f));
+    auto lower_teal = std::make_shared<Lambertian>(
+            CommonMath::Color(0.2f, 0.8f, 0.8f));
+
+    world.add(std::make_shared<Quad>(
+                    CommonMath::Point3(-3.0f, -2.0f, 5.0f),
+                    CommonMath::Vec3(-3.0f, -2.0f, 5.0f),
+                    CommonMath::Vec3(0.0f, 4.0f, 0.0f),
+                    left_red));
+    world.add(std::make_shared<Quad>(
+            CommonMath::Point3(-2.0f, -2.0f, 0.0f),
+            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+            CommonMath::Vec3(0.0f, 4.0f, 4.0f),
+            back_green
+            ));
+
+    world.add(std::make_shared<Quad>(
+            CommonMath::Point3(3.0f, -2.0f, 1.0f),
+            CommonMath::Vec3(0.0f, 0.0f, 4.0f),
+            CommonMath::Vec3(0.0f, 4.0f, 0.0f),
+            right_blue
+            ));
+
+    world.add(std::make_shared<Quad>(
+            CommonMath::Point3(-2.0f, 3.0f, 1.0f),
+            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+            CommonMath::Vec3(0.0f, 0.0f, 4.0f),
+            upper_orange
+            ));
+
+    world.add(std::make_shared<Quad>(
+            CommonMath::Point3(-2.0f, -3.0f, 5.0f),
+            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+            CommonMath::Vec3(0.0f, 0.0f, -4.0f),
+            lower_teal));
+
+    cam.aspect_ratio = 1.0f;
+    cam.image_width = 400;
+    cam.samples_per_pixel = 40;
+    cam.max_depth = 40;
+
+    cam.vfov = 80;
+    cam.lookfrom = CommonMath::Point3(0.0f, 0.0f, 9.0f);
+    cam.lookat = CommonMath::Point3(0.0f, 0.0f, 0.0f);
+    cam.vup = CommonMath::Vec3(0.0f, 1.0f, 0.0f);
 
     cam.defocus_angle = 0;
 }

@@ -1,12 +1,16 @@
 #include "quad.h"
 
-Quad::Quad(CommonMath::Point3 q, CommonMath::Vec3 _u, CommonMath::Vec3 _v): q_point(q), u(_u), v(_v), mat_ptr(mat_ptr) {
+Quad::Quad(
+        CommonMath::Point3 q,
+        CommonMath::Vec3 _u,
+        CommonMath::Vec3 _v,
+        std::shared_ptr<Material> _mat_ptr): q_point(q), u(_u), v(_v), mat_ptr(_mat_ptr) {
+
     CommonMath::Vec3 n = cross(u, v);
     this->normal = unit_vector(n);
     this->constant_in_plane_equation = dot(q,  normal);
 
-    // TODO: replace denominator to 1
-    this->constant_vec_for_finding_alpha_beta = n / dot(this->normal, this->normal);
+    this->constant_vec_for_finding_alpha_beta = n;
 
     this->box = AABB(q, q + u + v).expand_box_on_small_delta_if_needed();
 }
@@ -17,7 +21,7 @@ AABB Quad::get_bounding_box() const {
 
 bool Quad::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
     // checking whether direction of the ray is OK
-    double denominator = dot(this->normal, r.GetDirection());
+    double denominator = CommonMath::dot(this->normal, r.GetDirection());
 
     if (fabs(denominator) < 1e-8){
         return false;
@@ -25,13 +29,24 @@ bool Quad::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const 
 
     // checking whether direction scaler of the ray is OK
     double appropriate_direction_scaler = (
-            this->constant_in_plane_equation - dot(this->normal, r.GetOrigin())) / denominator;
+            this->constant_in_plane_equation - CommonMath::dot(this->normal, r.GetOrigin())) / denominator;
 
     if (!ray_t.contains(appropriate_direction_scaler)){
         return false;
     }
 
     CommonMath::Point3 intersection_point = r.at(appropriate_direction_scaler);
+    CommonMath::Vec3 quad_hit_point = intersection_point - this->q_point;
+
+    double alpha = CommonMath::dot(this->normal, CommonMath::cross(quad_hit_point, this->u));
+    double beta = CommonMath::dot(this->normal, CommonMath::cross(this->u, quad_hit_point));
+
+    if(alpha < 0 || alpha > 1 || beta < 0 || beta > 1){
+        return false;
+    }
+
+    rec.u = alpha;
+    rec.v = beta;
 
     rec.t = appropriate_direction_scaler;
     rec.p = intersection_point;
