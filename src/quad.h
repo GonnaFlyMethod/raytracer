@@ -16,6 +16,8 @@ private:
     CommonMath::Vec3 normal;
     double constant_in_plane_equation;
 
+    CommonMath::Vec3 constant_vec_for_finding_alpha_beta;
+
 public:
     Quad(CommonMath::Point3 q, CommonMath::Vec3 _u, CommonMath::Vec3 _v);
     AABB get_bounding_box() const override;

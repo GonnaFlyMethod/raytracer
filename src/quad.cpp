@@ -5,6 +5,9 @@ Quad::Quad(CommonMath::Point3 q, CommonMath::Vec3 _u, CommonMath::Vec3 _v): q_po
     this->normal = unit_vector(n);
     this->constant_in_plane_equation = dot(q,  normal);
 
+    // TODO: replace denominator to 1
+    this->constant_vec_for_finding_alpha_beta = n / dot(this->normal, this->normal);
+
     this->box = AABB(q, q + u + v).expand_box_on_small_delta_if_needed();
 }
 
