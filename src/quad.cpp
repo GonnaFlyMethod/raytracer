@@ -10,7 +10,7 @@ Quad::Quad(
     this->normal = unit_vector(n);
     this->constant_in_plane_equation = dot(q,  normal);
 
-    this->constant_vec_for_finding_alpha_beta = n;
+    this->constant_vec_for_finding_alpha_beta = n / CommonMath::dot(n, n);
 
     this->box = AABB(q, q + u + v).expand_box_on_small_delta_if_needed();
 }
@@ -38,8 +38,8 @@ bool Quad::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const 
     CommonMath::Point3 intersection_point = r.at(appropriate_direction_scaler);
     CommonMath::Vec3 quad_hit_point = intersection_point - this->q_point;
 
-    double alpha = CommonMath::dot(this->normal, CommonMath::cross(quad_hit_point, this->u));
-    double beta = CommonMath::dot(this->normal, CommonMath::cross(this->u, quad_hit_point));
+    double alpha = CommonMath::dot(this->constant_vec_for_finding_alpha_beta, CommonMath::cross(quad_hit_point, this->u));
+    double beta = CommonMath::dot(this->constant_vec_for_finding_alpha_beta, CommonMath::cross(this->u, quad_hit_point));
 
     if(alpha < 0 || alpha > 1 || beta < 0 || beta > 1){
         return false;

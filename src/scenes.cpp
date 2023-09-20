@@ -155,36 +155,36 @@ void quads(HittableList& world, Camera& cam){
             CommonMath::Color(0.2f, 0.8f, 0.8f));
 
     world.add(std::make_shared<Quad>(
-                    CommonMath::Point3(-3.0f, -2.0f, 5.0f),
-                    CommonMath::Vec3(-3.0f, -2.0f, 5.0f),
-                    CommonMath::Vec3(0.0f, 4.0f, 0.0f),
-                    left_red));
-    world.add(std::make_shared<Quad>(
-            CommonMath::Point3(-2.0f, -2.0f, 0.0f),
-            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
-            CommonMath::Vec3(0.0f, 4.0f, 4.0f),
-            back_green
-            ));
-
-    world.add(std::make_shared<Quad>(
-            CommonMath::Point3(3.0f, -2.0f, 1.0f),
-            CommonMath::Vec3(0.0f, 0.0f, 4.0f),
+            CommonMath::Point3(-3.0f,-2.0f, 5.0f),
+            CommonMath::Vec3(0.0f, 0.0f,-4.0f),
             CommonMath::Vec3(0.0f, 4.0f, 0.0f),
-            right_blue
-            ));
+            left_red));
 
-    world.add(std::make_shared<Quad>(
-            CommonMath::Point3(-2.0f, 3.0f, 1.0f),
-            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
-            CommonMath::Vec3(0.0f, 0.0f, 4.0f),
-            upper_orange
-            ));
+    world.add(
+            std::make_shared<Quad>(
+                    CommonMath::Point3(-2.0f,-2.0f, 0.0f),
+                    CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+                    CommonMath::Vec3(0.0f, 4.0f, 0.0f),
+                    back_green));
 
-    world.add(std::make_shared<Quad>(
-            CommonMath::Point3(-2.0f, -3.0f, 5.0f),
-            CommonMath::Vec3(4.0f, 0.0f, 0.0f),
-            CommonMath::Vec3(0.0f, 0.0f, -4.0f),
-            lower_teal));
+    world.add(
+            std::make_shared<Quad>(
+                    CommonMath::Point3( 3.0f,-2.0f, 1.0f),
+                    CommonMath::Vec3(0.0f, 0.0f, 4.0f),
+                    CommonMath::Vec3(0.0f, 4.0f, 0.0f),
+                    right_blue));
+    world.add(
+            std::make_shared<Quad>(
+                    CommonMath::Point3(-2.0f, 3.0f, 1.0f),
+                    CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+                    CommonMath::Vec3(0.0f, 0.0f, 4.0f),
+                    upper_orange));
+    world.add(
+            std::make_shared<Quad>(
+                    CommonMath::Point3(-2.0f,-3.0f, 5.0f),
+                    CommonMath::Vec3(4.0f, 0.0f, 0.0f),
+                    CommonMath::Vec3(0.0f, 0.0f,-4.0f),
+                    lower_teal));
 
     cam.aspect_ratio = 1.0f;
     cam.image_width = 400;
