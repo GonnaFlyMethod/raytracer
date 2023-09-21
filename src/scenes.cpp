@@ -143,15 +143,15 @@ void two_spheres_with_perlin_texture(HittableList& world, Camera& cam){
 }
 
 void quads(HittableList& world, Camera& cam){
-    auto left_red = std::make_shared<Lambertian>(
-            CommonMath::Color(0.1f, 0.2f, 0.2f));
-    auto back_green = std::make_shared<Lambertian>(
+    auto left_red     = std::make_shared<Lambertian>(
+            CommonMath::Color(1.0f, 0.2f, 0.2f));
+    auto back_green   = std::make_shared<Lambertian>(
             CommonMath::Color(0.2f, 1.0f, 0.2f));
-    auto right_blue = std::make_shared<Lambertian>(
+    auto right_blue   = std::make_shared<Lambertian>(
             CommonMath::Color(0.2f, 0.2f, 1.0f));
     auto upper_orange = std::make_shared<Lambertian>(
             CommonMath::Color(1.0f, 0.5f, 0.0f));
-    auto lower_teal = std::make_shared<Lambertian>(
+    auto lower_teal   = std::make_shared<Lambertian>(
             CommonMath::Color(0.2f, 0.8f, 0.8f));
 
     world.add(std::make_shared<Quad>(
@@ -186,15 +186,15 @@ void quads(HittableList& world, Camera& cam){
                     CommonMath::Vec3(0.0f, 0.0f,-4.0f),
                     lower_teal));
 
-    cam.aspect_ratio = 1.0f;
-    cam.image_width = 400;
-    cam.samples_per_pixel = 40;
-    cam.max_depth = 40;
+    cam.aspect_ratio = 16.0f / 9.0f;
+    cam.image_width = 1280;
+    cam.samples_per_pixel = 50;
+    cam.max_depth = 50;
 
     cam.vfov = 80;
-    cam.lookfrom = CommonMath::Point3(0.0f, 0.0f, 9.0f);
-    cam.lookat = CommonMath::Point3(0.0f, 0.0f, 0.0f);
-    cam.vup = CommonMath::Vec3(0.0f, 1.0f, 0.0f);
+    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,9.0f);
+    cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
+    cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
 
     cam.defocus_angle = 0;
 }
