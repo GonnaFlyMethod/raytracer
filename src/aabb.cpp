@@ -1,8 +1,10 @@
 #include "aabb.h"
 #include "interval.h"
+#include "common_math/vec3.h"
+#include "common_math/ray.h"
 
 
-AABB::AABB(const Point3 &pointA, const Point3 &pointB) {
+AABB::AABB(const CommonMath::Point3 &pointA, const CommonMath::Point3 &pointB) {
     this->x = Interval(fmin(pointA[0], pointB[0]), fmax(pointA[0], pointB[0]));
     this->y = Interval(fmin(pointA[1], pointB[1]), fmax(pointA[1], pointB[1]));
     this->z = Interval(fmin(pointA[2], pointB[2]), fmax(pointA[2], pointB[2]));
@@ -26,7 +28,7 @@ const Interval& AABB::axis(int n) const {
     return z;
 }
 
-bool AABB::hit(const Ray &r, Interval &ray_t) const {
+bool AABB::hit(const CommonMath::Ray &r, Interval &ray_t) const {
     for (int a = 0;a < 3;a++){
         double invD = 1 / r.GetDirection()[a];
         double origin = r.GetOrigin()[a];
@@ -47,4 +49,14 @@ bool AABB::hit(const Ray &r, Interval &ray_t) const {
     }
 
     return true;
+}
+
+AABB AABB::expand_box_on_small_delta_if_needed() const {
+    double delta = 0.0001f;
+
+    Interval new_x = this->x.size() >= delta ? this->x : this->x.expand(delta);
+    Interval new_y = this->y.size() >= delta ? this->y : this->y.expand(delta);
+    Interval new_z = this->z.size() >= delta ? this->z : this->z.expand(delta);
+
+    return {new_x, new_y, new_z};
 }

@@ -1,11 +1,12 @@
 #include <chrono>
+#include <memory>
 
 #include "file_writer.h"
 #include "camera.h"
-#include "bvh.h"
 #include "scenes.h"
+#include "bvh.h"
 
-#define MAX_NUM_OF_SCENES 4;
+#define MAX_NUM_OF_SCENES 5;
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -49,6 +50,11 @@ int main(int argc, char** argv) {
 
             two_spheres_with_perlin_texture(world, cam);
             break;
+        case 5:
+            std::clog << "5 quads will be drawn" << '\n';
+
+            quads(world, cam);
+            break;
         default:
             std::clog << "Random spheres will be drawn(default scene)" << '\n';
 
@@ -56,9 +62,9 @@ int main(int argc, char** argv) {
             break;
     }
 
-    world = HittableList(make_shared<BoundingVolumeNode>(world));
+    world = HittableList(std::make_shared<BoundingVolumeNode>(world));
 
-    std::map<size_t, std::vector<Color>> final_result;
+    std::map<size_t, std::vector<CommonMath::Color>> final_result;
 
     std::clog << "Rendering colors of pixels..." << '\n';
 

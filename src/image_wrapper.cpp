@@ -14,13 +14,13 @@ int ImageWrapper::clamp(int x, int low, int high) {
 }
 
 ImageWrapper::ImageWrapper(std::string filename) {
-    if (load("textures/" + filename)) return;
-    if (load("../textures/" + filename)) return;
-    if (load("../../textures/" + filename)) return;
-    if (load("../../../textures/" + filename)) return;
-    if (load("../../../../textures/" + filename)) return;
-    if (load("../../../../../textures/" + filename)) return;
-    if (load("../../../../../../textures/" + filename)) return;
+    if (load("texture/" + filename)) return;
+    if (load("../texture/" + filename)) return;
+    if (load("../../texture/" + filename)) return;
+    if (load("../../../texture/" + filename)) return;
+    if (load("../../../../texture/" + filename)) return;
+    if (load("../../../../../texture/" + filename)) return;
+    if (load("../../../../../../texture/" + filename)) return;
 
     std::cerr << "Error occurred while loading file: " << filename << '\n';
 }

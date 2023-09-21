@@ -79,3 +79,6 @@ Perlin texture(noise version):
 
 Perlin texture(gradient version) with turbulence and sin(x) phases:
 ![](./collection/perlin_noise_gradient_with_phases_texture.png)
+
+Quads:
+![](./collection/quads.png)

@@ -1,12 +1,13 @@
 #include "perlin.h"
-#include "common_math.h"
+#include "common_math/random.h"
+#include "common_math/vec3.h"
 
 
 Perlin::Perlin() {
-    this->random_vec = new Vec3[Perlin::point_count];
+    this->random_vec = new CommonMath::Vec3[Perlin::point_count];
 
     for (int i = 0;i < Perlin::point_count;i++){
-        random_vec[i] = unit_vector(Vec3::random(-1, 1));
+        random_vec[i] = unit_vector(CommonMath::Vec3::random(-1, 1));
     }
 
     this->perm_x = perlin_generate_permutations();
@@ -29,7 +30,7 @@ int *Perlin::perlin_generate_permutations() {
     }
 
     for (int i = Perlin::point_count - 1; i > 0;i--){
-        int target = random_int(0, i);
+        int target = CommonMath::random_int(0, i);
         int tmp = p[i];
 
         p[i] = p[target];
@@ -39,7 +40,7 @@ int *Perlin::perlin_generate_permutations() {
     return p;
 }
 
-double Perlin::noise(const Point3& p) const{
+double Perlin::noise(const CommonMath::Point3& p) const{
     double u = p.x() - std::floor(p.x());
     double v = p.y() - std::floor(p.y());
     double w = p.z() - std::floor(p.z());
@@ -53,7 +54,7 @@ double Perlin::noise(const Point3& p) const{
     int j = static_cast<int>(floor(p.y()));
     int k = static_cast<int>(floor(p.z()));
 
-    Vec3 c[2][2][2];
+    CommonMath::Vec3 c[2][2][2];
 
     for (int di = 0; di < 2;di++){
         for (int dj = 0; dj < 2; dj++){
@@ -76,13 +77,13 @@ double Perlin::noise(const Point3& p) const{
 
 // Find out: Is pixel a discrete point or a quad with X[0;1] and Y[0;1]
 
-double Perlin::trilinear_interpolation(Vec3 c[2][2][2], double u, double v, double w) {
+double Perlin::trilinear_interpolation(CommonMath::Vec3 c[2][2][2], double u, double v, double w) {
     double accum = 0.0;
 
     for (int i = 0; i < 2; i++){
         for (int j = 0; j < 2; j++){
             for(int k = 0;k < 2; k++){
-                Vec3 weight(u-i, v-j, w-k);
+                CommonMath::Vec3 weight(u-i, v-j, w-k);
 
                 accum += (u * i + (1 - i) * (1 - u)) *
                          (v * j + (1 - j) * (1 - v)) *
@@ -95,9 +96,9 @@ double Perlin::trilinear_interpolation(Vec3 c[2][2][2], double u, double v, doub
 }
 
 
-double Perlin::turbulence(const Point3 &p, int depth) const {
+double Perlin::turbulence(const CommonMath::Point3 &p, int depth) const {
     double accum = 0.0f;
-    Point3 temp_p = p;
+    CommonMath::Point3 temp_p = p;
     double weight = 1.0f;
 
     for (int i = 0; i < depth; i++){

@@ -11,7 +11,6 @@ public:
     Interval(Interval& intervalA, Interval& intervalB)
         : min(fmin(intervalA.min, intervalB.min)),
         max(fmax(intervalA.max, intervalB.max)){};
-
     bool contains(double x);
 
     double size() const;
