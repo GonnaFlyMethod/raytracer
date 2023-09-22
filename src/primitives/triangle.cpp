@@ -2,6 +2,8 @@
 
 
 bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
+    // TODO: finish to write python experiment
+
     // Barycentric coords
     // Let ABC - triangle
     // I - intersection point between plane and a ray, then to find whether the intersection point is within
