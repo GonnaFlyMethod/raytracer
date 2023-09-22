@@ -1,9 +1,9 @@
 #pragma once
 
-#include "material.h"
-#include "aabb.h"
-#include "common_math/vec3.h"
-#include "common_math/ray.h"
+#include "../material.h"
+#include "../aabb.h"
+#include "../common_math/vec3.h"
+#include "../common_math/ray.h"
 
 
 class Quad: public Hittable {

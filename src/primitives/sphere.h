@@ -1,9 +1,9 @@
 #pragma once
 
-#include "hittable.h"
-#include "common_math/vec3.h"
-#include "aabb.h"
-#include "common_math/ray.h"
+#include "../hittable.h"
+#include "../common_math/vec3.h"
+#include "../aabb.h"
+#include "../common_math/ray.h"
 
 class Sphere: public Hittable{
 private:

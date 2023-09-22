@@ -1,5 +1,5 @@
 #include "sphere.h"
-#include "common_math/constants.h"
+#include "../common_math/constants.h"
 
 Sphere::Sphere(CommonMath::Point3 cen, double r, std::shared_ptr<Material> m):  center1(cen), radius(r), mat_ptr(m){
     CommonMath::Vec3 radius_vec = CommonMath::Vec3(r, r, r);
