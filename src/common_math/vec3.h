@@ -55,6 +55,7 @@ namespace CommonMath {
 
     double dot(const Vec3& a, const Vec3& b);
     Vec3 cross(const Vec3& a, const Vec3& b);
+    Vec3 project(const Vec3& source, const Vec3& base);
 
     Vec3 unit_vector(Vec3 v);
 

@@ -2,17 +2,12 @@
 
 Quad::Quad(
         CommonMath::Point3 q,
-        CommonMath::Vec3 _u,
-        CommonMath::Vec3 _v,
-        std::shared_ptr<Material> _mat_ptr): q_point(q), u(_u), v(_v), mat_ptr(_mat_ptr) {
+        CommonMath::Vec3 u,
+        CommonMath::Vec3 v,
+        std::shared_ptr<Material> _mat_ptr): PlaceableOnPlane(q,u,v), mat_ptr(_mat_ptr) {
 
     CommonMath::Vec3 n = cross(u, v);
-    this->normal = unit_vector(n);
-    this->constant_in_plane_equation = dot(this->normal,  this->q_point);
-
     this->constant_vec_for_finding_alpha_beta = n / CommonMath::dot(n, n);
-
-    this->box = AABB(q, q + u + v).expand_box_on_small_delta_if_needed();
 }
 
 AABB Quad::get_bounding_box() const {
@@ -20,18 +15,9 @@ AABB Quad::get_bounding_box() const {
 }
 
 bool Quad::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
-    // checking whether direction of the ray is OK
-    double denominator = CommonMath::dot(this->normal, r.GetDirection());
+    double appropriate_direction_scaler;
 
-    if (fabs(denominator) < 1e-8){
-        return false;
-    }
-
-    // checking whether direction scaler of the ray is OK
-    double appropriate_direction_scaler = (
-            this->constant_in_plane_equation - CommonMath::dot(this->normal, r.GetOrigin())) / denominator;
-
-    if (!ray_t.contains(appropriate_direction_scaler)){
+    if (!this->does_hit_plane(r, ray_t, appropriate_direction_scaler)){
         return false;
     }
 

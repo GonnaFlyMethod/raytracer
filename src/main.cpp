@@ -6,7 +6,7 @@
 #include "scenes.h"
 #include "bvh.h"
 
-#define MAX_NUM_OF_SCENES 5;
+#define MAX_NUM_OF_SCENES 6;
 
 // TODO:
 // 1) Rename project in cmake lists(untitled1)
@@ -54,6 +54,11 @@ int main(int argc, char** argv) {
             std::clog << "5 quads will be drawn" << '\n';
 
             quads(world, cam);
+            break;
+        case 6:
+            std::clog << "1 triangle will be drawn" << '\n';
+
+            triangle(world, cam);
             break;
         default:
             std::clog << "Random spheres will be drawn(default scene)" << '\n';

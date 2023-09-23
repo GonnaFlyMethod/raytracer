@@ -2,6 +2,7 @@
 #include "material.h"
 #include "primitives/sphere.h"
 #include "primitives/quad.h"
+#include "primitives/triangle.h"
 
 void random_spheres(HittableList& world, Camera& cam){
     auto checker_texture = std::make_shared<CheckerTexture>(
@@ -187,7 +188,7 @@ void quads(HittableList& world, Camera& cam){
                     lower_teal));
 
     cam.aspect_ratio = 16.0f / 9.0f;
-    cam.image_width = 1280;
+    cam.image_width = 400;
     cam.samples_per_pixel = 50;
     cam.max_depth = 50;
 
@@ -195,6 +196,29 @@ void quads(HittableList& world, Camera& cam){
     cam.lookfrom = CommonMath::Point3(0.0f,0.0f,9.0f);
     cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
     cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
+
+    cam.defocus_angle = 0;
+}
+
+void triangle(HittableList& world, Camera& cam){
+    auto red_lambertian_material= std::make_shared<Lambertian>(
+            CommonMath::Color(1.0f, 0.2f, 0.2f));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(0.0f, 6.0f, 0.0f),
+            CommonMath::Point3(6.0f, 6.0f, 0.0f),
+            CommonMath::Point3(0.0f, 3.0f, 0.0f),
+            red_lambertian_material));
+
+    cam.aspect_ratio = 16.0f / 9.0f;
+    cam.image_width = 400;
+    cam.samples_per_pixel = 50;
+    cam.max_depth = 50;
+
+    cam.vfov = 80;
+    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,5.0f);
+    cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
+    cam.vup      = CommonMath::Vec3(0.0f,0.0f,0.0f);
 
     cam.defocus_angle = 0;
 }

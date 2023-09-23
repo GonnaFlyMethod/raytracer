@@ -156,6 +156,16 @@ namespace CommonMath{
         };
     }
 
+    Vec3 project(const Vec3& source, const Vec3& base){
+        double projection_percentage = dot(source, base) / (
+                (base.x() * base.x()) +(base.y() * base.y()) + (base.z() * base.z()));
+
+        return {
+            projection_percentage * base.x(),
+            projection_percentage * base.y(),
+            projection_percentage * base.z()};
+    }
+
     inline Vec3 unit_vector(Vec3 v) {
         return v / v.length();
     }

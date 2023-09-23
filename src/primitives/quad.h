@@ -4,18 +4,12 @@
 #include "../aabb.h"
 #include "../common_math/vec3.h"
 #include "../common_math/ray.h"
+#include "placeable_on_plane.h"
 
 
-class Quad: public Hittable {
+class Quad: public Hittable, public PlaceableOnPlane {
 private:
-    CommonMath::Point3 q_point;
-    CommonMath::Vec3 u, v;
     std::shared_ptr<Material> mat_ptr;
-    AABB box;
-
-    CommonMath::Vec3 normal;
-    double constant_in_plane_equation;
-
     CommonMath::Vec3 constant_vec_for_finding_alpha_beta;
 
 public:
