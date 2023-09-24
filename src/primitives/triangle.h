@@ -17,6 +17,9 @@ private:
     std::shared_ptr<Material> mat_ptr;
 
 public:
+    static PlaceableOnPlane construct_correct_uv(
+            CommonMath::Point3 vertexA,CommonMath::Point3 vertexB,CommonMath::Point3 vertexC);
+
     Triangle(
             CommonMath::Point3 vertexA,
             CommonMath::Point3 vertexB,

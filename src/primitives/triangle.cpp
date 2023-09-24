@@ -1,12 +1,48 @@
+#include <algorithm>
 #include "triangle.h"
 
+
+PlaceableOnPlane
+Triangle::construct_correct_uv(CommonMath::Point3 vertexA, CommonMath::Point3 vertexB, CommonMath::Point3 vertexC) {
+    std::vector<CommonMath::Point3> vertices{vertexA, vertexB, vertexC};
+
+    std::ranges::sort(vertices, [](const CommonMath::Point3& a, const CommonMath::Point3& b){
+        return a.x() < b.x();
+    });
+
+    int q_point_index;
+
+    if (vertices[0].x() == vertices[1].x()){
+        q_point_index = vertices[0].y() < vertices[1].y() ? 0 : 1;
+    }else{
+        q_point_index = 0;
+    }
+
+    CommonMath::Point3 q_point = vertices[q_point_index];
+    vertices.erase(vertices.begin() + q_point_index);
+
+    int v_index;
+
+    if (vertices[0].y() > vertices[1].y()){
+        v_index = 0;
+    }else{
+        v_index = 1;
+    }
+
+    CommonMath::Vec3 v = vertices[v_index];
+    vertices.erase(vertices.begin() + v_index);
+
+    CommonMath::Vec3 u = vertices[0];
+
+    return {q_point, u, v};
+}
 
 Triangle::Triangle(
         CommonMath::Point3 vertexA,
         CommonMath::Point3 vertexB,
         CommonMath::Point3 vertexC,
         std::shared_ptr<Material> _mat_ptr)
-    : PlaceableOnPlane(vertexA, vertexB- vertexA, vertexC - vertexA), mat_ptr(_mat_ptr) {
+    : PlaceableOnPlane(construct_correct_uv(vertexA, vertexB, vertexC)), mat_ptr(_mat_ptr) {
 
     this->vertexA = vertexA;
     this->AB = vertexB - vertexA;
@@ -62,10 +98,13 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
      // https://stackoverflow.com/questions/23980748/triangle-texture-mapping-with-barycentric-coordinates
      // https://computergraphics.stackexchange.com/questions/1866/how-to-map-square-texture-to-triangle
 
+     rec.u = intersection_point.x() - this->box.x.min / this->box.x.max - this->box.x.min;
+     rec.v = intersection_point.x() - this->box.y.min / this->box.y.max - this->box.y.min;
+
      rec.t = appropriate_direction_scaler;
      rec.p = intersection_point;
      rec.mat_ptr = this->mat_ptr;
      rec.set_face_normal(r, this->normal);
 
-    return false; // To be implemented
+    return true;
 }
