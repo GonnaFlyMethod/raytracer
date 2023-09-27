@@ -205,9 +205,9 @@ void triangle(HittableList& world, Camera& cam){
             CommonMath::Color(1.0f, 0.2f, 0.2f));
 
     world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(0.0f, 6.0f, 0.0f),
-            CommonMath::Point3(6.0f, 6.0f, 0.0f),
-            CommonMath::Point3(0.0f, 3.0f, 0.0f),
+            CommonMath::Point3(5.0f,-2.0f, 5.0f),
+            CommonMath::Point3(-2.0f,-2.0f, 5.0f),
+            CommonMath::Point3(-2.0f,2.0f, 5.0f),
             red_lambertian_material));
 
     cam.aspect_ratio = 16.0f / 9.0f;
@@ -216,9 +216,9 @@ void triangle(HittableList& world, Camera& cam){
     cam.max_depth = 50;
 
     cam.vfov = 80;
-    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,5.0f);
+    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,9.0f);
     cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
-    cam.vup      = CommonMath::Vec3(0.0f,0.0f,0.0f);
+    cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
 
     cam.defocus_angle = 0;
 }

@@ -5,21 +5,17 @@
 
 class Triangle: public Hittable, public PlaceableOnPlane{
 private:
-    CommonMath::Point3 vertexA;
-    CommonMath::Point3 vertexB;
+    CommonMath::Point3 vertex0;
+    CommonMath::Point3 vertex1;
+    CommonMath::Point3 vertex2;
 
-    CommonMath::Vec3 AB;
-    CommonMath::Vec3 BC;
-
-    CommonMath::Vec3 v_vector_for_barycentric_alpha;
-    CommonMath::Vec3 v_vector_for_barycentric_beta;
+    CommonMath::Vec3 vertex0_vertex1_edge;
+    CommonMath::Vec3 vertex1_vertex2_edge;
+    CommonMath::Vec3 vertex2_vertex0_edge;
 
     std::shared_ptr<Material> mat_ptr;
 
 public:
-    static PlaceableOnPlane construct_correct_uv(
-            CommonMath::Point3 vertexA,CommonMath::Point3 vertexB,CommonMath::Point3 vertexC);
-
     Triangle(
             CommonMath::Point3 vertexA,
             CommonMath::Point3 vertexB,

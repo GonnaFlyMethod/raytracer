@@ -58,6 +58,7 @@ CommonMath::Color Camera::ray_color(const CommonMath::Ray &r, const HittableList
         CommonMath::Color attenuation;
 
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
+            CommonMath::Color r = ray_color(scattered, world, depth - 1);
             return attenuation * ray_color(scattered, world, depth - 1);
         }
 

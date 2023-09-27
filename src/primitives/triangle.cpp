@@ -2,59 +2,20 @@
 #include "triangle.h"
 
 
-PlaceableOnPlane
-Triangle::construct_correct_uv(CommonMath::Point3 vertexA, CommonMath::Point3 vertexB, CommonMath::Point3 vertexC) {
-    std::vector<CommonMath::Point3> vertices{vertexA, vertexB, vertexC};
-
-    std::ranges::sort(vertices, [](const CommonMath::Point3& a, const CommonMath::Point3& b){
-        return a.x() < b.x();
-    });
-
-    int q_point_index;
-
-    if (vertices[0].x() == vertices[1].x()){
-        q_point_index = vertices[0].y() < vertices[1].y() ? 0 : 1;
-    }else{
-        q_point_index = 0;
-    }
-
-    CommonMath::Point3 q_point = vertices[q_point_index];
-    vertices.erase(vertices.begin() + q_point_index);
-
-    int v_index;
-
-    if (vertices[0].y() > vertices[1].y()){
-        v_index = 0;
-    }else{
-        v_index = 1;
-    }
-
-    CommonMath::Vec3 v = vertices[v_index];
-    vertices.erase(vertices.begin() + v_index);
-
-    CommonMath::Vec3 u = vertices[0];
-
-    return {q_point, u, v};
-}
-
 Triangle::Triangle(
-        CommonMath::Point3 vertexA,
-        CommonMath::Point3 vertexB,
-        CommonMath::Point3 vertexC,
+        CommonMath::Point3 vertex0,
+        CommonMath::Point3 vertex1,
+        CommonMath::Point3 vertex2,
         std::shared_ptr<Material> _mat_ptr)
-    : PlaceableOnPlane(construct_correct_uv(vertexA, vertexB, vertexC)), mat_ptr(_mat_ptr) {
+    : PlaceableOnPlane(vertex0, vertex1 - vertex0, vertex2 - vertex0), mat_ptr(_mat_ptr) {
 
-    this->vertexA = vertexA;
-    this->AB = vertexB - vertexA;
-    CommonMath::Vec3 CB = vertexB - vertexC;
+    this->vertex0 = vertex0;
+    this->vertex1 = vertex1;
+    this->vertex2 = vertex2;
 
-    this->v_vector_for_barycentric_alpha = this->AB - CommonMath::project(this->AB, CB);
-
-    this->vertexB = vertexB;
-    this->BC = vertexB - vertexC;
-    CommonMath::Vec3 AC = vertexA - vertexC;
-
-    this->v_vector_for_barycentric_beta = this->BC - CommonMath::project(this->BC, AC);
+    this->vertex0_vertex1_edge = vertex1 - vertex0;
+    this->vertex1_vertex2_edge = vertex2 - vertex1;
+    this->vertex2_vertex0_edge = vertex0 - vertex2;
 }
 
 AABB Triangle::get_bounding_box() const {
@@ -62,15 +23,6 @@ AABB Triangle::get_bounding_box() const {
 }
 
 bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
-// TODO: try to replace the current code for alpa, beta and gamma on this one:
-//    d1 = get_distance(p, a);
-//    d2 = get_distance(p, b);
-//    d3 = get_distance(p, c);
-
-//    r1 = d1 / (d1 + d2 + d3); aka alpha
-//    r2 = d2 / (d1 + d2 + d3); aka beta
-//    r3 = d3 / (d1 + d2 + d3); aka gamma
-
     double appropriate_direction_scaler;
 
     if (!this->does_hit_plane(r, ray_t, appropriate_direction_scaler)){
@@ -79,27 +31,38 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     CommonMath::Point3 intersection_point = r.at(appropriate_direction_scaler);
 
-     double alpha = 1.0f - (
-             dot(intersection_point - this->vertexA, this->v_vector_for_barycentric_alpha) /
-             dot(this->AB, this->v_vector_for_barycentric_alpha));
+    CommonMath::Vec3 vertex0_intersection_point_vec = intersection_point - vertex0;
 
-     double beta = 1.0f - (
-             dot(intersection_point - this->vertexB, this->v_vector_for_barycentric_beta) /
-             dot(this->BC, this->v_vector_for_barycentric_beta));
+    CommonMath::Vec3 C0 = cross(vertex0_vertex1_edge, vertex0_intersection_point_vec);
+    bool is_intersection_point_on_left_side_of_edge = dot(this->normal, C0) > 0;
 
-     double gamma = 1.0f - alpha - beta;
+    if (!is_intersection_point_on_left_side_of_edge){
+        return false;
+    }
 
-     if (alpha < 0.0f || beta < 0.0f || gamma < 0.0f){
-         return false;
-     }
+    CommonMath::Vec3 vertex1_intersection_point_vec = intersection_point - vertex1;
+    CommonMath::Vec3 C1 = cross(vertex1_vertex2_edge, vertex1_intersection_point_vec);
+
+    is_intersection_point_on_left_side_of_edge = dot(this->normal, C1) > 0;
+    if (!is_intersection_point_on_left_side_of_edge){
+        return false;
+    }
+
+    CommonMath::Vec3 vertex2_intersection_point_vec = intersection_point - vertex2;
+    CommonMath::Vec3 C2 = cross(vertex2_vertex0_edge, vertex2_intersection_point_vec);
+
+    is_intersection_point_on_left_side_of_edge = dot(this->normal, C2) > 0;
+    if (!is_intersection_point_on_left_side_of_edge){
+        return false;
+    }
 
      // TODO: remap barycentric coordinates to uv coordinates;
      // https://plugincafe.maxon.net/topic/9630/12933_convert-barycentric-coords-to-uv-coords/2
      // https://stackoverflow.com/questions/23980748/triangle-texture-mapping-with-barycentric-coordinates
      // https://computergraphics.stackexchange.com/questions/1866/how-to-map-square-texture-to-triangle
-
-     rec.u = intersection_point.x() - this->box.x.min / this->box.x.max - this->box.x.min;
-     rec.v = intersection_point.x() - this->box.y.min / this->box.y.max - this->box.y.min;
+//
+//     rec.u = intersection_point.x() - this->box.x.min / (this->box.x.max - this->box.x.min);
+//     rec.v = intersection_point.y() - this->box.y.min / (this->box.y.max - this->box.y.min);
 
      rec.t = appropriate_direction_scaler;
      rec.p = intersection_point;
