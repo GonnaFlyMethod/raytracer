@@ -64,10 +64,21 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 //     rec.u = intersection_point.x() - this->box.x.min / (this->box.x.max - this->box.x.min);
 //     rec.v = intersection_point.y() - this->box.y.min / (this->box.y.max - this->box.y.min);
 
-     rec.t = appropriate_direction_scaler;
-     rec.p = intersection_point;
-     rec.mat_ptr = this->mat_ptr;
-     rec.set_face_normal(r, this->normal);
+    CommonMath::Vec3 vec_from_q_point_to_intersection_point = intersection_point - this->q_point;
+    CommonMath::Vec3 projected_vector_onto_u = CommonMath::project(
+            vec_from_q_point_to_intersection_point, this->u);
+
+    rec.u = projected_vector_onto_u.length() / this->u.length();
+
+    CommonMath::Vec3 projected_vector_onto_v = CommonMath::project(
+            vec_from_q_point_to_intersection_point, this->v);
+
+    rec.v = projected_vector_onto_v.length() / this->v.length();
+
+    rec.t = appropriate_direction_scaler;
+    rec.p = intersection_point;
+    rec.mat_ptr = this->mat_ptr;
+    rec.set_face_normal(r, this->normal);
 
     return true;
 }

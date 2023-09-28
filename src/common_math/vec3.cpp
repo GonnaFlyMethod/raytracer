@@ -73,11 +73,11 @@ namespace CommonMath{
         return *this *= 1/val;
     }
 
-    double Vec3::length(){
+    double Vec3::length() const {
         return sqrt(length_squared());
     }
 
-    double Vec3::length_squared(){
+    double Vec3::length_squared() const{
         double Xsqrd = data[0] * data[0];
         double Ysqrd = data[1] * data[1];
         double Zsqrd = data[2] * data[2];

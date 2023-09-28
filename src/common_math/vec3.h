@@ -30,8 +30,8 @@ namespace CommonMath {
         Vec3& operator*=(const double val);
         Vec3& operator/=(const double val);
 
-        double length();
-        double length_squared();
+        double length() const;
+        double length_squared() const;
 
     };
 

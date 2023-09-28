@@ -201,14 +201,14 @@ void quads(HittableList& world, Camera& cam){
 }
 
 void triangle(HittableList& world, Camera& cam){
-    auto red_lambertian_material= std::make_shared<Lambertian>(
-            CommonMath::Color(1.0f, 0.2f, 0.2f));
+    auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");
+    auto bricks_lambertian_texture= std::make_shared<Lambertian>(bricks_texture);
 
     world.add(std::make_shared<Triangle>(
             CommonMath::Point3(5.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,2.0f, 5.0f),
-            red_lambertian_material));
+            bricks_lambertian_texture));
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;
