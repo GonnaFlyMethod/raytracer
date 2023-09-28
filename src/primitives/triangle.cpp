@@ -6,9 +6,10 @@ Triangle::Triangle(
         CommonMath::Point3 vertex0,
         CommonMath::Point3 vertex1,
         CommonMath::Point3 vertex2,
-        std::shared_ptr<Material> _mat_ptr)
+        std::shared_ptr<Material> _mat_ptr, Camera& camera)
     : PlaceableOnPlane(vertex0, vertex1 - vertex0, vertex2 - vertex0), mat_ptr(_mat_ptr) {
 
+    // TODO: move to the other type of initialization
     this->vertex0 = vertex0;
     this->vertex1 = vertex1;
     this->vertex2 = vertex2;
@@ -16,6 +17,8 @@ Triangle::Triangle(
     this->vertex0_vertex1_edge = vertex1 - vertex0;
     this->vertex1_vertex2_edge = vertex2 - vertex1;
     this->vertex2_vertex0_edge = vertex0 - vertex2;
+
+    this->cam = camera;
 }
 
 AABB Triangle::get_bounding_box() const {
@@ -63,6 +66,46 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 //
 //     rec.u = intersection_point.x() - this->box.x.min / (this->box.x.max - this->box.x.min);
 //     rec.v = intersection_point.y() - this->box.y.min / (this->box.y.max - this->box.y.min);
+
+    std::vector<double> vertices[3] = {
+            this->cam.convert_to_clip_space_coords(vertex0),
+            this->cam.convert_to_clip_space_coords(vertex1),
+            this->cam.convert_to_clip_space_coords(vertex2),
+    };
+
+    // Normalizing clip space coordinates
+    for(int i = 0;i < 3;i++){
+        for (int j = 0; j < 3; j++){
+            vertices[i][j] /= vertices[i][3];
+        }
+    }
+
+
+    double uv_coords[3][2];
+
+    for(int i = 0;i < 3; i++){
+        std::vector<double> current_vertex = vertices[i];
+        CommonMath::Vec3 barycentric_coordinates = CommonMath::Vec3(
+                1.0f - current_vertex[0] - current_vertex[1], current_vertex[0], current_vertex[1]);
+
+        CommonMath::Vec3 vertex_in_u;
+        CommonMath::Vec3 vertex_in_v;
+
+        for(int i = 0; i < 3; i++){
+            vertex_in_u += barycentric_coordinates[i] * this->u;
+            vertex_in_v += barycentric_coordinates[i] * this->v;
+        }
+    }
+
+    // Push vectors to uv_coords, us barycentric coordinates and uv coordinates of each vertex of triangle
+    // to calculate true uv for ray-triangle intersection point
+
+
+
+    double u, v;
+    for(int i =0;i < 3;i++){
+        u +=  barycentric_coordinates[i] * this->u;
+    }
 
     CommonMath::Vec3 vec_from_q_point_to_intersection_point = intersection_point - this->q_point;
     CommonMath::Vec3 projected_vector_onto_u = CommonMath::project(

@@ -2,6 +2,7 @@
 
 #include "../hittable.h"
 #include "placeable_on_plane.h"
+#include "../camera.h"
 
 class Triangle: public Hittable, public PlaceableOnPlane{
 private:
@@ -15,12 +16,14 @@ private:
 
     std::shared_ptr<Material> mat_ptr;
 
+    Camera cam;
+
 public:
     Triangle(
             CommonMath::Point3 vertexA,
             CommonMath::Point3 vertexB,
             CommonMath::Point3 vertexC,
-            std::shared_ptr<Material> _mat_ptr);
+            std::shared_ptr<Material> _mat_ptr, Camera& camera);
 
     AABB get_bounding_box() const override;
 

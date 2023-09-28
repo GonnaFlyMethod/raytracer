@@ -44,6 +44,34 @@ int Camera::get_calculated_image_height() const{
     return image_height;
 }
 
+std::vector<double> Camera::convert_to_clip_space_coords(CommonMath::Vec3 input_vector) const {
+    double vec_to_work_with[4] = {input_vector.x(), input_vector.y(), input_vector.z(), 1};
+
+    // Set near plane and far plane according to the actual distance from camera of nearest object and
+    // farthest object in the scene
+
+    double near_plane = 0.001f;
+    double far_plane = CommonMath::infinity * 2 * tan(this->vfov / 2);
+
+    double projection_matrix[4][4] = {{1.0, 0.0, 0.0,                                                      0.0},
+                                      {0.0, 1.0, 0.0,                                                      0.0},
+                                      {0.0, 0.0, -1.0,                                                     -1.0},
+                                      {0.0, 0.0,
+                                          -2.0 * near_plane * far_plane / (far_plane - near_plane),
+                                          near_plane + far_plane / (far_plane - near_plane)}};
+
+    std::vector<double> result;
+    result.reserve(4);
+
+    for (int i = 0; i < 4;i++){
+        for (int j =0 ; i < 4;i++){
+            result[i] += projection_matrix[i][j] * vec_to_work_with[j];
+        }
+    }
+
+    return result;
+}
+
 CommonMath::Color Camera::ray_color(const CommonMath::Ray &r, const HittableList &world, int depth) {
     hit_record rec;
 
