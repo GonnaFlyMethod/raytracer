@@ -81,12 +81,15 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     }
 
 
-    double uv_coords[3][2];
+    CommonMath::Vec3 uv_coords[3][2]; // This should not Vec3, it should be double instead
+    CommonMath::Vec3 barycentric_coordinates_of_vertices[3];
 
     for(int i = 0;i < 3; i++){
         std::vector<double> current_vertex = vertices[i];
         CommonMath::Vec3 barycentric_coordinates = CommonMath::Vec3(
                 1.0f - current_vertex[0] - current_vertex[1], current_vertex[0], current_vertex[1]);
+
+        barycentric_coordinates_of_vertices[i] = barycentric_coordinates;
 
         CommonMath::Vec3 vertex_in_u;
         CommonMath::Vec3 vertex_in_v;
@@ -95,17 +98,26 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex_in_u += barycentric_coordinates[i] * this->u;
             vertex_in_v += barycentric_coordinates[i] * this->v;
         }
+
+        uv_coords[i][0] = vertex_in_u;
+        uv_coords[i][1] = vertex_in_v;
     }
+
+
+    // TODO: finilize and explain the stretching of square texture during the process of blending between
+    //  uv coordinates of triangle's vertices
+
+    rec.u = uv_coords[0][0] * barycentric_coordinates_of_vertices[0] +
+            uv_coords[1][0] * barycentric_coordinates_of_vertices[1] +
+            uv_coords[2][0] * barycentric_coordinates_of_vertices[2];
+
+    rec.v = uv_coords[0][1] * barycentric_coordinates_of_vertices[0] +
+            uv_coords[1][1] * barycentric_coordinates_of_vertices[1] +
+            uv_coords[2][1] * barycentric_coordinates_of_vertices[2];
 
     // Push vectors to uv_coords, us barycentric coordinates and uv coordinates of each vertex of triangle
     // to calculate true uv for ray-triangle intersection point
 
-
-
-    double u, v;
-    for(int i =0;i < 3;i++){
-        u +=  barycentric_coordinates[i] * this->u;
-    }
 
     CommonMath::Vec3 vec_from_q_point_to_intersection_point = intersection_point - this->q_point;
     CommonMath::Vec3 projected_vector_onto_u = CommonMath::project(
