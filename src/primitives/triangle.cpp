@@ -18,6 +18,18 @@ Triangle::Triangle(
     this->vertex1_vertex2_edge = vertex2 - vertex1;
     this->vertex2_vertex0_edge = vertex0 - vertex2;
 
+    this->vertexA = vertex0;
+    this->AB = vertexB - vertexA;
+    CommonMath::Vec3 CB = vertexB - vertexC;
+
+    this->v_vector_for_barycentric_alpha = this->AB - CommonMath::project(this->AB, CB);
+
+    this->vertexB = vertexB;
+    this->BC = vertexB - vertexC;
+    CommonMath::Vec3 AC = vertexA - vertexC;
+
+    this->v_vector_for_barycentric_beta = this->BC - CommonMath::project(this->BC, AC);
+
     this->cam = camera;
 }
 
@@ -79,8 +91,6 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertices_in_clipspace[i][j] /= vertices_in_clipspace[i][3];
         }
     }
-
-
 
     std::vector<CommonMath::Vec3> vertices_in_uv_space;
 
