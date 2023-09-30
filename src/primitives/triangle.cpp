@@ -93,53 +93,63 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
         vertices_in_uv_space.push_back(vertex_in_uv_space);
     }
 
-    double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
-    double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
-    double c_side_of_whole_triangle = this->vertex2_vertex0_edge.length();
+    double alpha = 1.0f - (
+            dot(intersection_point - this->vertexA, this->v_vector_for_barycentric_alpha) /
+            dot(this->AB, this->v_vector_for_barycentric_alpha));
 
-    double semi_perimeter = (a_side_of_whole_triangle + b_side_of_whole_triangle + c_side_of_whole_triangle) / 2.0f;
+    double beta = 1.0f - (
+            dot(intersection_point - this->vertexB, this->v_vector_for_barycentric_beta) /
+            dot(this->BC, this->v_vector_for_barycentric_beta));
 
-    double area_of_whole_triangle =
-        sqrt(semi_perimeter * (semi_perimeter - a_side_of_whole_triangle) *
-            (semi_perimeter - b_side_of_whole_triangle) *
-            (semi_perimeter - c_side_of_whole_triangle));
+    double gamma = 1.0f - alpha - beta;
 
-    // V1PV2 sub triangle
-    double v1_p_a_side = (intersection_point - vertex1).length();
-    double v2_p_b_side = (intersection_point - vertex2).length();
-    double v1_p_v2_semi_perimeter = (v1_p_a_side + v2_p_b_side + b_side_of_whole_triangle) / 2.0f;
-
-    double v1_p_v2_area = sqrt(v1_p_v2_semi_perimeter *
-                               (v1_p_v2_semi_perimeter - v1_p_a_side) *
-                               (v1_p_v2_semi_perimeter - v2_p_b_side) *
-                               (v1_p_v2_semi_perimeter - b_side_of_whole_triangle));
-
-    double alpha = v1_p_v2_area / area_of_whole_triangle;
-
-    // V1PV2 sub triangle
-    double v0_p_a_side = (intersection_point - vertex0).length();
-    v2_p_b_side = (intersection_point - vertex2).length();
-    double v2_p_v0_semi_perimeter = (v0_p_a_side + v2_p_b_side + c_side_of_whole_triangle) / 2.0f;
-
-    double v2_p_v0_area = sqrt(v2_p_v0_semi_perimeter *
-                               (v2_p_v0_semi_perimeter - v0_p_a_side) *
-                               (v2_p_v0_semi_perimeter - v2_p_b_side) *
-                               (v2_p_v0_semi_perimeter - c_side_of_whole_triangle));
-
-    double beta = v2_p_v0_area / area_of_whole_triangle;
-
-
-    // V0PV1 sub triangle
-    v0_p_a_side = (intersection_point - vertex0).length();
-    double v1_p_b_side = (intersection_point - vertex1).length();
-    double v0_p_v1_semi_perimeter = (v0_p_a_side + v1_p_b_side + a_side_of_whole_triangle) / 2.0f;
-
-    double v0_p_v1_area = sqrt(v0_p_v1_semi_perimeter *
-            (v0_p_v1_semi_perimeter - v0_p_a_side) *
-            (v0_p_v1_semi_perimeter - v1_p_b_side) *
-            (v0_p_v1_semi_perimeter - a_side_of_whole_triangle));
-
-    double gamma = v0_p_v1_area / area_of_whole_triangle;
+//    double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
+//    double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
+//    double c_side_of_whole_triangle = this->vertex2_vertex0_edge.length();
+//
+//    double semi_perimeter = (a_side_of_whole_triangle + b_side_of_whole_triangle + c_side_of_whole_triangle) / 2.0f;
+//
+//    double area_of_whole_triangle =
+//        sqrt(semi_perimeter * (semi_perimeter - a_side_of_whole_triangle) *
+//            (semi_perimeter - b_side_of_whole_triangle) *
+//            (semi_perimeter - c_side_of_whole_triangle));
+//
+//    // V1PV2 sub triangle
+//    double v1_p_a_side = (intersection_point - vertex1).length();
+//    double v2_p_b_side = (intersection_point - vertex2).length();
+//    double v1_p_v2_semi_perimeter = (v1_p_a_side + v2_p_b_side + b_side_of_whole_triangle) / 2.0f;
+//
+//    double v1_p_v2_area = sqrt(v1_p_v2_semi_perimeter *
+//                               (v1_p_v2_semi_perimeter - v1_p_a_side) *
+//                               (v1_p_v2_semi_perimeter - v2_p_b_side) *
+//                               (v1_p_v2_semi_perimeter - b_side_of_whole_triangle));
+//
+//    double alpha = v1_p_v2_area / area_of_whole_triangle;
+//
+//    // V1PV2 sub triangle
+//    double v0_p_a_side = (intersection_point - vertex0).length();
+//    v2_p_b_side = (intersection_point - vertex2).length();
+//    double v2_p_v0_semi_perimeter = (v0_p_a_side + v2_p_b_side + c_side_of_whole_triangle) / 2.0f;
+//
+//    double v2_p_v0_area = sqrt(v2_p_v0_semi_perimeter *
+//                               (v2_p_v0_semi_perimeter - v0_p_a_side) *
+//                               (v2_p_v0_semi_perimeter - v2_p_b_side) *
+//                               (v2_p_v0_semi_perimeter - c_side_of_whole_triangle));
+//
+//    double beta = v2_p_v0_area / area_of_whole_triangle;
+//
+//
+//    // V0PV1 sub triangle
+//    v0_p_a_side = (intersection_point - vertex0).length();
+//    double v1_p_b_side = (intersection_point - vertex1).length();
+//    double v0_p_v1_semi_perimeter = (v0_p_a_side + v1_p_b_side + a_side_of_whole_triangle) / 2.0f;
+//
+//    double v0_p_v1_area = sqrt(v0_p_v1_semi_perimeter *
+//            (v0_p_v1_semi_perimeter - v0_p_a_side) *
+//            (v0_p_v1_semi_perimeter - v1_p_b_side) *
+//            (v0_p_v1_semi_perimeter - a_side_of_whole_triangle));
+//
+//    double gamma = v0_p_v1_area / area_of_whole_triangle;
 
     rec.u = (vertices_in_uv_space[0].x() * alpha) +
             (vertices_in_uv_space[1].x() * beta) +
