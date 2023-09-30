@@ -53,7 +53,7 @@ public:
 
     int get_calculated_image_height() const;
 
-    double[4] convert_to_clip_space_coords(CommonMath::Vec3 input_vector) const;
+    std::vector<double> convert_to_clip_space_coords(CommonMath::Vec3 input_vector) const;
 
     CommonMath::Color ray_color(const CommonMath::Ray& r, const HittableList &world, int depth);
 

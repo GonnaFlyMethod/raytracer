@@ -67,7 +67,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 //     rec.u = intersection_point.x() - this->box.x.min / (this->box.x.max - this->box.x.min);
 //     rec.v = intersection_point.y() - this->box.y.min / (this->box.y.max - this->box.y.min);
 
-    std::vector<double> vertices[3] = {
+    std::vector<double> vertices_in_clipspace[3]{
             this->cam.convert_to_clip_space_coords(vertex0),
             this->cam.convert_to_clip_space_coords(vertex1),
             this->cam.convert_to_clip_space_coords(vertex2),
@@ -76,59 +76,104 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     // Normalizing clip space coordinates
     for(int i = 0;i < 3;i++){
         for (int j = 0; j < 3; j++){
-            vertices[i][j] /= vertices[i][3];
+            vertices_in_clipspace[i][j] /= vertices_in_clipspace[i][3];
         }
     }
 
 
-    CommonMath::Vec3 uv_coords[3][2]; // This should not Vec3, it should be double instead
-    CommonMath::Vec3 barycentric_coordinates_of_vertices[3];
 
-    for(int i = 0;i < 3; i++){
-        std::vector<double> current_vertex = vertices[i];
-        CommonMath::Vec3 barycentric_coordinates = CommonMath::Vec3(
-                1.0f - current_vertex[0] - current_vertex[1], current_vertex[0], current_vertex[1]);
+    std::vector<CommonMath::Vec3> vertices_in_uv_space;
 
-        barycentric_coordinates_of_vertices[i] = barycentric_coordinates;
+    for(std::vector<double> clipspace_vertex: vertices_in_clipspace){
+        CommonMath::Vec3 vertex_in_uv_space = CommonMath::Vec3(
+                clipspace_vertex[0] * 0.5 +0.5,
+                clipspace_vertex[1] * 0.5 +0.5,
+                0.0f);
 
-        CommonMath::Vec3 vertex_in_u;
-        CommonMath::Vec3 vertex_in_v;
-
-        for(int i = 0; i < 3; i++){
-            vertex_in_u += barycentric_coordinates[i] * this->u;
-            vertex_in_v += barycentric_coordinates[i] * this->v;
-        }
-
-        uv_coords[i][0] = vertex_in_u;
-        uv_coords[i][1] = vertex_in_v;
+        vertices_in_uv_space.push_back(vertex_in_uv_space);
     }
 
+    double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
+    double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
+    double c_side_of_whole_triangle = this->vertex2_vertex0_edge.length();
+
+    double semi_perimeter = (a_side_of_whole_triangle + b_side_of_whole_triangle + c_side_of_whole_triangle) / 2.0f;
+
+    double area_of_whole_triangle =
+        sqrt(semi_perimeter * (semi_perimeter - a_side_of_whole_triangle) *
+            (semi_perimeter - b_side_of_whole_triangle) *
+            (semi_perimeter - c_side_of_whole_triangle));
+
+    // V1PV2 sub triangle
+    double v1_p_a_side = (intersection_point - vertex1).length();
+    double v2_p_b_side = (intersection_point - vertex2).length();
+    double v1_p_v2_semi_perimeter = (v1_p_a_side + v2_p_b_side + b_side_of_whole_triangle) / 2.0f;
+
+    double v1_p_v2_area = sqrt(v1_p_v2_semi_perimeter *
+                               (v1_p_v2_semi_perimeter - v1_p_a_side) *
+                               (v1_p_v2_semi_perimeter - v2_p_b_side) *
+                               (v1_p_v2_semi_perimeter - b_side_of_whole_triangle));
+
+    double alpha = v1_p_v2_area / area_of_whole_triangle;
+
+    // V1PV2 sub triangle
+    double v0_p_a_side = (intersection_point - vertex0).length();
+    v2_p_b_side = (intersection_point - vertex2).length();
+    double v2_p_v0_semi_perimeter = (v0_p_a_side + v2_p_b_side + c_side_of_whole_triangle) / 2.0f;
+
+    double v2_p_v0_area = sqrt(v2_p_v0_semi_perimeter *
+                               (v2_p_v0_semi_perimeter - v0_p_a_side) *
+                               (v2_p_v0_semi_perimeter - v2_p_b_side) *
+                               (v2_p_v0_semi_perimeter - c_side_of_whole_triangle));
+
+    double beta = v2_p_v0_area / area_of_whole_triangle;
+
+
+    // V0PV1 sub triangle
+    v0_p_a_side = (intersection_point - vertex0).length();
+    double v1_p_b_side = (intersection_point - vertex1).length();
+    double v0_p_v1_semi_perimeter = (v0_p_a_side + v1_p_b_side + a_side_of_whole_triangle) / 2.0f;
+
+    double v0_p_v1_area = sqrt(v0_p_v1_semi_perimeter *
+            (v0_p_v1_semi_perimeter - v0_p_a_side) *
+            (v0_p_v1_semi_perimeter - v1_p_b_side) *
+            (v0_p_v1_semi_perimeter - a_side_of_whole_triangle));
+
+    double gamma = v0_p_v1_area / area_of_whole_triangle;
+
+    rec.u = (vertices_in_uv_space[0].x() * alpha) +
+            (vertices_in_uv_space[1].x() * beta) +
+            (vertices_in_uv_space[2].x() * gamma);
+
+    rec.v = (vertices_in_uv_space[0].y() * alpha) +
+            (vertices_in_uv_space[1].y() * beta) +
+            (vertices_in_uv_space[2].y() * gamma);
 
     // TODO: finilize and explain the stretching of square texture during the process of blending between
-    //  uv coordinates of triangle's vertices
+    //  uv coordinates of triangle's vertices_in_clipspace
 
-    rec.u = uv_coords[0][0] * barycentric_coordinates_of_vertices[0] +
-            uv_coords[1][0] * barycentric_coordinates_of_vertices[1] +
-            uv_coords[2][0] * barycentric_coordinates_of_vertices[2];
-
-    rec.v = uv_coords[0][1] * barycentric_coordinates_of_vertices[0] +
-            uv_coords[1][1] * barycentric_coordinates_of_vertices[1] +
-            uv_coords[2][1] * barycentric_coordinates_of_vertices[2];
+//    rec.u = uv_coords[0][0] * barycentric_coordinates_of_vertices[0] +
+//            uv_coords[1][0] * barycentric_coordinates_of_vertices[1] +
+//            uv_coords[2][0] * barycentric_coordinates_of_vertices[2];
+//
+//    rec.v = uv_coords[0][1] * barycentric_coordinates_of_vertices[0] +
+//            uv_coords[1][1] * barycentric_coordinates_of_vertices[1] +
+//            uv_coords[2][1] * barycentric_coordinates_of_vertices[2];
 
     // Push vectors to uv_coords, us barycentric coordinates and uv coordinates of each vertex of triangle
     // to calculate true uv for ray-triangle intersection point
 
 
-    CommonMath::Vec3 vec_from_q_point_to_intersection_point = intersection_point - this->q_point;
-    CommonMath::Vec3 projected_vector_onto_u = CommonMath::project(
-            vec_from_q_point_to_intersection_point, this->u);
-
-    rec.u = projected_vector_onto_u.length() / this->u.length();
-
-    CommonMath::Vec3 projected_vector_onto_v = CommonMath::project(
-            vec_from_q_point_to_intersection_point, this->v);
-
-    rec.v = projected_vector_onto_v.length() / this->v.length();
+//    CommonMath::Vec3 vec_from_q_point_to_intersection_point = intersection_point - this->q_point;
+//    CommonMath::Vec3 projected_vector_onto_u = CommonMath::project(
+//            vec_from_q_point_to_intersection_point, this->u);
+//
+//    rec.u = projected_vector_onto_u.length() / this->u.length();
+//
+//    CommonMath::Vec3 projected_vector_onto_v = CommonMath::project(
+//            vec_from_q_point_to_intersection_point, this->v);
+//
+//    rec.v = projected_vector_onto_v.length() / this->v.length();
 
     rec.t = appropriate_direction_scaler;
     rec.p = intersection_point;

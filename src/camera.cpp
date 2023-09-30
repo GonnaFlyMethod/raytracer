@@ -51,7 +51,7 @@ std::vector<double> Camera::convert_to_clip_space_coords(CommonMath::Vec3 input_
     // farthest object in the scene
 
     double near_plane = 0.001f;
-    double far_plane = CommonMath::infinity * 2 * tan(this->vfov / 2);
+    double far_plane = 9000 * 2 * tan(this->vfov / 2);
 
     double projection_matrix[4][4] = {{1.0, 0.0, 0.0,                                                      0.0},
                                       {0.0, 1.0, 0.0,                                                      0.0},
@@ -60,12 +60,12 @@ std::vector<double> Camera::convert_to_clip_space_coords(CommonMath::Vec3 input_
                                           -2.0 * near_plane * far_plane / (far_plane - near_plane),
                                           near_plane + far_plane / (far_plane - near_plane)}};
 
-    std::vector<double> result;
-    result.reserve(4);
+    std::vector<double> result{0.0f,0.0f,0.0f,0.0f};
 
-    for (int i = 0; i < 4;i++){
-        for (int j =0 ; i < 4;i++){
-            result[i] += projection_matrix[i][j] * vec_to_work_with[j];
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < 4; j++){
+            double matrix_element = projection_matrix[i][j];
+            result[i] += matrix_element * vec_to_work_with[j];
         }
     }
 

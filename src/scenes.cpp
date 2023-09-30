@@ -208,7 +208,7 @@ void triangle(HittableList& world, Camera& cam){
             CommonMath::Point3(5.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,2.0f, 5.0f),
-            bricks_lambertian_texture));
+            bricks_lambertian_texture, cam));
 
     cam.aspect_ratio = 16.0f / 9.0f;
     cam.image_width = 400;
