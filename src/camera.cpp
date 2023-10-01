@@ -53,12 +53,17 @@ std::vector<double> Camera::convert_to_clip_space_coords(CommonMath::Vec3 input_
     double near_plane = 0.001f;
     double far_plane = 9000 * 2 * tan(this->vfov / 2);
 
-    double projection_matrix[4][4] = {{1.0, 0.0, 0.0,                                                      0.0},
-                                      {0.0, 1.0, 0.0,                                                      0.0},
-                                      {0.0, 0.0, -1.0,                                                     -1.0},
-                                      {0.0, 0.0,
-                                          -2.0 * near_plane * far_plane / (far_plane - near_plane),
-                                          near_plane + far_plane / (far_plane - near_plane)}};
+//    double projection_matrix[4][4] = {{1.0, 0.0, 0.0,                                                      0.0},
+//                                      {0.0, 1.0, 0.0,                                                      0.0},
+//                                      {0.0, 0.0, -1.0,                                                     -1.0},
+//                                      {0.0, 0.0,
+//                                          -2.0 * near_plane * far_plane / (far_plane - near_plane),
+//                                          near_plane + far_plane / (far_plane - near_plane)}};
+
+    double projection_matrix[4][4] = {{1.0, 0.0, 0.0, 0.0},
+                                      {0.0, 1.0, 0.0, 0.0},
+                                      {0.0, 0.0, 1.0, 0.0f},
+                                      {0.0, 0.0, 0.0f, 1.0f}};
 
     std::vector<double> result{0.0f,0.0f,0.0f,0.0f};
 

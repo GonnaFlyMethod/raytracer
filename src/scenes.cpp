@@ -201,13 +201,13 @@ void quads(HittableList& world, Camera& cam){
 }
 
 void triangle(HittableList& world, Camera& cam){
-    auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");
+    auto bricks_texture = std::make_shared<ImageTexture>("earthmap.jpg");
     auto bricks_lambertian_texture= std::make_shared<Lambertian>(bricks_texture);
 
     world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(5.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,-2.0f, 5.0f),
             CommonMath::Point3(-2.0f,2.0f, 5.0f),
+            CommonMath::Point3(5.0f,-2.0f, 5.0f),
             bricks_lambertian_texture, cam));
 
     cam.aspect_ratio = 16.0f / 9.0f;

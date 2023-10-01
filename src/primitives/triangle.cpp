@@ -1,5 +1,8 @@
 #include <algorithm>
 #include "triangle.h"
+#include "../external/glm/glm.hpp"
+#include "../external/glm/ext/matrix_transform.hpp"
+#include "../external/glm/ext/matrix_clip_space.hpp"
 
 
 Triangle::Triangle(
@@ -67,29 +70,55 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     // TODO: finilize and explain the stretching of square texture during the process of blending between
     //  uv coordinates of triangle's vertices using barycentric weights
 
-    std::vector<double> vertices_in_clipspace[3]{
-            this->cam.convert_to_clip_space_coords(vertex0),
-            this->cam.convert_to_clip_space_coords(vertex1),
-            this->cam.convert_to_clip_space_coords(vertex2),
+
+    // TODO: Now the texture maps to the triangle without wierd stretching but the orientation of
+    // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
+    // bigger so in this case I can observe the larger amount of texture and I then I can check whether
+    // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
+    //
+
+    glm::mat4 viewMatrix = glm::mat4(1.0f);
+//    viewMatrix = glm::translate(viewMatrix,
+//                                -glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z());
+    viewMatrix = glm::lookAt(glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()),
+                glm::vec3(cam.lookat.x(), cam.lookat.y(), cam.lookat.z()), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    glm::mat4 projectionMatrix = glm::perspective(
+            glm::radians(cam.vfov), (double)cam.aspect_ratio, 0.0, 1000.0);
+
+
+    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
+    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
+    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
+
+    glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
+            (vertex_0_in_clip_space.x / vertex_0_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_0_in_clip_space.y / vertex_0_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_0_in_clip_space.z / vertex_0_in_clip_space.w) * 0.5f + 0.5f);
+
+    glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
+            (vertex_1_in_clip_space.x / vertex_1_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_1_in_clip_space.y / vertex_1_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_1_in_clip_space.z / vertex_1_in_clip_space.w) * 0.5f + 0.5f);
+
+    glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
+            (vertex_2_in_clip_space.x / vertex_2_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_2_in_clip_space.y / vertex_2_in_clip_space.w) * 0.5f + 0.5f,
+            (vertex_2_in_clip_space.z / vertex_2_in_clip_space.w) * 0.5f + 0.5f);
+
+
+//    // Normalizing clip space coordinates
+//    for(int i = 0;i < 3;i++){
+//        for (int j = 0; j < 3; j++){
+//            vertices_in_clipspace[i][j] /= vertices_in_clipspace[i][3];
+//        }
+//    }
+
+    std::vector<CommonMath::Vec3> vertices_in_uv_space {
+        CommonMath::Vec3(vertex_0_in_normalized_device_space.x, vertex_0_in_normalized_device_space.y, vertex_0_in_normalized_device_space.z),
+        CommonMath::Vec3(vertex_1_in_normalized_device_space.x, vertex_1_in_normalized_device_space.y, vertex_1_in_normalized_device_space.z),
+        CommonMath::Vec3(vertex_2_in_normalized_device_space.x, vertex_2_in_normalized_device_space.y, vertex_2_in_normalized_device_space.z),
     };
-
-    // Normalizing clip space coordinates
-    for(int i = 0;i < 3;i++){
-        for (int j = 0; j < 3; j++){
-            vertices_in_clipspace[i][j] /= vertices_in_clipspace[i][3];
-        }
-    }
-
-    std::vector<CommonMath::Vec3> vertices_in_uv_space;
-
-    for(std::vector<double> clipspace_vertex: vertices_in_clipspace){
-        CommonMath::Vec3 vertex_in_uv_space = CommonMath::Vec3(
-                clipspace_vertex[0] * 0.5f + 0.5f, // TODO: check this once again
-                clipspace_vertex[1] * 0.5f + 0.5f,
-                0.0f);
-
-        vertices_in_uv_space.push_back(vertex_in_uv_space);
-    }
 
     double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
     double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
