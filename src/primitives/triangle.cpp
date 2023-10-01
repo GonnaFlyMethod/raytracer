@@ -75,7 +75,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
     // bigger so in this case I can observe the larger amount of texture and I then I can check whether
     // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
-    //
+
+    // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
 
     glm::mat4 viewMatrix = glm::mat4(1.0f);
 //    viewMatrix = glm::translate(viewMatrix,
