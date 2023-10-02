@@ -28,6 +28,13 @@ AABB Triangle::get_bounding_box() const {
     return this->box;
 }
 
+glm::vec2 ClipSpaceToScreenSpace(const glm::vec4& clipSpaceCoord, int screenWidth, int screenHeight) {
+    glm::vec2 screenSpaceCoord;
+    screenSpaceCoord.x = ((clipSpaceCoord.x + 1.0f) / 2.0f) * static_cast<float>(screenWidth);
+    screenSpaceCoord.y = ((1.0f - clipSpaceCoord.y) / 2.0f) * static_cast<float>(screenHeight);
+    return screenSpaceCoord;
+}
+
 bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
     double appropriate_direction_scaler;
 
@@ -79,41 +86,32 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
 
     glm::mat4 viewMatrix = glm::mat4(1.0f);
-//    viewMatrix = glm::translate(viewMatrix,
-//                                -glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z());
-    viewMatrix = glm::lookAt(glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()),
-                glm::vec3(cam.lookat.x(), cam.lookat.y(), cam.lookat.z()), glm::vec3(0.0f, 1.0f, 0.0f));
+    viewMatrix = glm::translate(viewMatrix, -glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()));
 
     glm::mat4 projectionMatrix = glm::perspective(
             glm::radians(cam.vfov), (double)cam.aspect_ratio, 0.0, 1000.0);
 
-
-    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
-    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
-    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
+    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
+    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
+    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
 
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            (vertex_0_in_clip_space.x / vertex_0_in_clip_space.w) * 0.5f + 0.5f,
-            (vertex_0_in_clip_space.y / vertex_0_in_clip_space.w) * 0.5f + 0.5f,
+            1 - ((vertex_0_in_clip_space.x / vertex_0_in_clip_space.w) * 0.5f + 0.5f),
+            1 - ((vertex_0_in_clip_space.y / vertex_0_in_clip_space.w) * 0.5f + 0.5f),
             (vertex_0_in_clip_space.z / vertex_0_in_clip_space.w) * 0.5f + 0.5f);
 
     glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            (vertex_1_in_clip_space.x / vertex_1_in_clip_space.w) * 0.5f + 0.5f,
-            (vertex_1_in_clip_space.y / vertex_1_in_clip_space.w) * 0.5f + 0.5f,
+            1 - ((vertex_1_in_clip_space.x / vertex_1_in_clip_space.w) * 0.5f + 0.5f),
+            1 - ((vertex_1_in_clip_space.y / vertex_1_in_clip_space.w) * 0.5f + 0.5f),
             (vertex_1_in_clip_space.z / vertex_1_in_clip_space.w) * 0.5f + 0.5f);
 
     glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            (vertex_2_in_clip_space.x / vertex_2_in_clip_space.w) * 0.5f + 0.5f,
-            (vertex_2_in_clip_space.y / vertex_2_in_clip_space.w) * 0.5f + 0.5f,
+            1 - ((vertex_2_in_clip_space.x / vertex_2_in_clip_space.w) * 0.5f + 0.5f),
+            1 - ((vertex_2_in_clip_space.y / vertex_2_in_clip_space.w) * 0.5f + 0.5f),
             (vertex_2_in_clip_space.z / vertex_2_in_clip_space.w) * 0.5f + 0.5f);
-
-
-//    // Normalizing clip space coordinates
-//    for(int i = 0;i < 3;i++){
-//        for (int j = 0; j < 3; j++){
-//            vertices_in_clipspace[i][j] /= vertices_in_clipspace[i][3];
-//        }
-//    }
 
     std::vector<CommonMath::Vec3> vertices_in_uv_space {
         CommonMath::Vec3(vertex_0_in_normalized_device_space.x, vertex_0_in_normalized_device_space.y, vertex_0_in_normalized_device_space.z),
