@@ -9,13 +9,14 @@ void Camera::initilize(){
     image_height = static_cast<int>(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
 
+    // TODO: get rid of this alias
     camera_center = lookfrom;
 
     // Determine viewport dimensions.
     auto theta = CommonMath::degrees_to_radians(vfov);
     auto h = tan(theta/2);
-    auto viewport_height = 2 * h * focus_dist;
-    auto viewport_width = viewport_height * (static_cast<double>(image_width)/image_height);
+    viewport_height = 2 * h * focus_dist;
+    viewport_width = viewport_height * (static_cast<double>(image_width)/image_height);
 
     // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
     w = unit_vector(lookfrom - lookat);

@@ -206,7 +206,7 @@ void triangle(HittableList& world, Camera& cam){
 
     world.add(std::make_shared<Triangle>(
             CommonMath::Point3(2.0f*-5.0f,2.0f*-2.0f, 5.0f),
-            CommonMath::Point3(2.0f*-2.0f,2.0f*3.0f, 5.0f),
+            CommonMath::Point3(2.0f*-3.5f,2.0f*3.0f, 5.0f),
             CommonMath::Point3(2.0f*6.0f,2.0f*-2.0f, 5.0f),
             bricks_lambertian_texture, cam));
 
