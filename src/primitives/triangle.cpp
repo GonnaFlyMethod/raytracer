@@ -78,6 +78,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
 
+    // TODO: try resized earthmap texture
     glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
     glm::vec3 target(cam.lookat.x(), cam.lookat.y(), cam.lookat.z());  // Target position
     glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
