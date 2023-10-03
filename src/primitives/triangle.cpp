@@ -78,14 +78,16 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
 
-    glm::mat4 viewMatrix = glm::mat4(1.0f);
-    viewMatrix = glm::translate(viewMatrix, -glm::vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()));
-//
-//    glm::mat4 projectionMatrix = glm::perspective(
-//            glm::radians(cam.vfov), (double)cam.aspect_ratio, 0.0, 1000.0);
+    glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
+    glm::vec3 target(cam.lookat.x(), cam.lookat.y(), cam.lookat.z());  // Target position
+    glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
 
+    glm::mat4 viewMatrix = glm::lookAt(position, target, up);
     glm::mat4 projectionMatrix = glm::ortho(
-            0.0f, 0.2f, 0.0f, 1.5f, 0.1f, 10.0f);
+            -4.0f,
+            6.0f,
+            -6.0f,
+            7.0f, 9.0f, 0.0f);
 
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
@@ -95,18 +97,18 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
 
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            vertex_0_in_clip_space.x,
-            vertex_0_in_clip_space.y,
+            vertex_0_in_clip_space.x * 0.5 + 0.5,
+            vertex_0_in_clip_space.y  * 0.5 + 0.5,
             vertex_0_in_clip_space.z);
 
     glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            vertex_1_in_clip_space.x,
-            vertex_1_in_clip_space.y,
+            vertex_1_in_clip_space.x  * 0.5 + 0.5,
+            vertex_1_in_clip_space.y  * 0.5 + 0.5,
             vertex_1_in_clip_space.z);
 
     glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            vertex_2_in_clip_space.x,
-            vertex_2_in_clip_space.y,
+            vertex_2_in_clip_space.x  * 0.5 + 0.5,
+            vertex_2_in_clip_space.y  * 0.5 + 0.5,
             vertex_2_in_clip_space.z);
 
     std::vector<CommonMath::Vec3> vertices_in_uv_space {
