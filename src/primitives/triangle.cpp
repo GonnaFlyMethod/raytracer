@@ -62,62 +62,6 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
         return false;
     }
 
-     // TODO: remap barycentric coordinates to uv coordinates;
-     // https://plugincafe.maxon.net/topic/9630/12933_convert-barycentric-coords-to-uv-coords/2
-     // https://stackoverflow.com/questions/23980748/triangle-texture-mapping-with-barycentric-coordinates
-     // https://computergraphics.stackexchange.com/questions/1866/how-to-map-square-texture-to-triangle
-
-    // TODO: finilize and explain the stretching of square texture during the process of blending between
-    //  uv coordinates of triangle's vertices using barycentric weights
-
-
-    // TODO: Now the texture maps to the triangle without wierd stretching but the orientation of
-    // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
-    // bigger so in this case I can observe the larger amount of texture and I then I can check whether
-    // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
-
-    // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
-
-    // TODO: try resized earthmap texture
-    glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
-    glm::vec3 target(cam.lookat.x(), cam.lookat.y(), cam.lookat.z());  // Target position
-    glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
-
-    glm::mat4 viewMatrix = glm::lookAt(position, target, up);
-    glm::mat4 projectionMatrix = glm::ortho(
-            -4.0f,
-            6.0f,
-            -6.0f,
-            7.0f, 9.0f, 0.0f);
-
-    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
-    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
-    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
-
-    glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            vertex_0_in_clip_space.x * 0.5 + 0.5,
-            vertex_0_in_clip_space.y  * 0.5 + 0.5,
-            vertex_0_in_clip_space.z);
-
-    glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            vertex_1_in_clip_space.x  * 0.5 + 0.5,
-            vertex_1_in_clip_space.y  * 0.5 + 0.5,
-            vertex_1_in_clip_space.z);
-
-    glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            vertex_2_in_clip_space.x  * 0.5 + 0.5,
-            vertex_2_in_clip_space.y  * 0.5 + 0.5,
-            vertex_2_in_clip_space.z);
-
-    std::vector<CommonMath::Vec3> vertices_in_uv_space {
-        CommonMath::Vec3(vertex_0_in_normalized_device_space.x, vertex_0_in_normalized_device_space.y, vertex_0_in_normalized_device_space.z),
-        CommonMath::Vec3(vertex_1_in_normalized_device_space.x, vertex_1_in_normalized_device_space.y, vertex_1_in_normalized_device_space.z),
-        CommonMath::Vec3(vertex_2_in_normalized_device_space.x, vertex_2_in_normalized_device_space.y, vertex_2_in_normalized_device_space.z),
-    };
-
     double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
     double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
     double c_side_of_whole_triangle = this->vertex2_vertex0_edge.length();
@@ -164,6 +108,66 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             (v0_p_v1_semi_perimeter - a_side_of_whole_triangle));
 
     double gamma = v0_p_v1_area / area_of_whole_triangle;
+
+    // TODO: remap barycentric coordinates to uv coordinates;
+    // https://plugincafe.maxon.net/topic/9630/12933_convert-barycentric-coords-to-uv-coords/2
+    // https://stackoverflow.com/questions/23980748/triangle-texture-mapping-with-barycentric-coordinates
+    // https://computergraphics.stackexchange.com/questions/1866/how-to-map-square-texture-to-triangle
+
+    // TODO: finilize and explain the stretching of square texture during the process of blending between
+    //  uv coordinates of triangle's vertices using barycentric weights
+
+
+    // TODO: Now the texture maps to the triangle without wierd stretching but the orientation of
+    // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
+    // bigger so in this case I can observe the larger amount of texture and I then I can check whether
+    // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
+
+    // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
+
+    // TODO: try resized earthmap texture
+    glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
+
+    glm::vec3 target(
+            ((vertex0.x() + vertex1.x() + vertex2.x()) / 3.0f),
+            ((vertex0.y() + vertex1.y() + vertex2.y()) / 3.0f),
+            ((vertex0.z() + vertex1.z() + vertex2.z())) / 3.0f);  // Target position
+    glm::vec3 up(0.0f, 0.1f, 0.0f);      // Up vector
+
+    glm::mat4 viewMatrix = glm::lookAt(position, target, up);
+    glm::mat4 projectionMatrix = glm::ortho(
+            -3.0f,
+            3.0f,
+            -1.5f,
+            1.5f, -2.2f, 2.2f);
+
+    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
+    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
+    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
+
+    glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
+            vertex_0_in_clip_space.x * 0.5 + 0.5,
+            vertex_0_in_clip_space.y  * 0.5 + 0.5,
+            vertex_0_in_clip_space.z  * 0.5 + 0.5);
+
+    glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
+            vertex_1_in_clip_space.x  * 0.5 + 0.5,
+            vertex_1_in_clip_space.y  * 0.5 + 0.5,
+            vertex_1_in_clip_space.z  * 0.5 + 0.5);
+
+    glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
+            vertex_2_in_clip_space.x  * 0.5 + 0.5,
+            vertex_2_in_clip_space.y  * 0.5 + 0.5,
+            vertex_2_in_clip_space.z  * 0.5 + 0.5);
+
+    std::vector<CommonMath::Vec3> vertices_in_uv_space {
+            CommonMath::Vec3(vertex_0_in_normalized_device_space.x, vertex_0_in_normalized_device_space.y, vertex_0_in_normalized_device_space.z),
+            CommonMath::Vec3(vertex_1_in_normalized_device_space.x, vertex_1_in_normalized_device_space.y, vertex_1_in_normalized_device_space.z),
+            CommonMath::Vec3(vertex_2_in_normalized_device_space.x, vertex_2_in_normalized_device_space.y, vertex_2_in_normalized_device_space.z),
+    };
 
     rec.u = (vertices_in_uv_space[0].x() * alpha) +
             (vertices_in_uv_space[1].x() * beta) +
