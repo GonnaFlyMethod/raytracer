@@ -206,8 +206,8 @@ void triangle(HittableList& world, Camera& cam){
 
     world.add(std::make_shared<Triangle>(
             CommonMath::Point3(-1.0f,-1.0f, 0.0f),
-            CommonMath::Point3(1.0f,-1.0f, 0.0f),
-            CommonMath::Point3(0.0f,1.0f, 0.0f),
+            CommonMath::Point3(1.0f,3.0f, 0.0f),
+            CommonMath::Point3(2.0f,-1.0f, 0.0f),
             bricks_lambertian_texture, cam));
 
     cam.aspect_ratio = 16.0f / 9.0f;

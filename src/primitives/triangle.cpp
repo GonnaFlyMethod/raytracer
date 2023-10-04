@@ -129,17 +129,24 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
 
     glm::vec3 target(
-            ((vertex0.x() + vertex1.x() + vertex2.x()) / 3.0f),
-            ((vertex0.y() + vertex1.y() + vertex2.y()) / 3.0f),
-            ((vertex0.z() + vertex1.z() + vertex2.z())) / 3.0f);  // Target position
+            (vertex0.x() + vertex1.x() + vertex2.x()) / 3.0f,
+            (vertex0.y() + vertex1.y() + vertex2.y()) / 3.0f,
+            (vertex0.z() + vertex1.z() + vertex2.z()) / 3.0f);  // Target position
+
+//    glm::vec3 target(0.0f,
+//            0.0f,
+//            0.0f);
+
+
     glm::vec3 up(0.0f, 0.1f, 0.0f);      // Up vector
 
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
+    // TODO: Adjust the orthographic volume according to the current triangle's position on the screen
     glm::mat4 projectionMatrix = glm::ortho(
             -3.0f,
             3.0f,
             -1.5f,
-            1.5f, -2.2f, 2.2f);
+            1.5f, -2.2f, 4.2f);
 
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
@@ -149,17 +156,17 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
 
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            vertex_0_in_clip_space.x * 0.5 + 0.5,
+            1 -(vertex_0_in_clip_space.x * 0.5 + 0.5),
             vertex_0_in_clip_space.y  * 0.5 + 0.5,
             vertex_0_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            vertex_1_in_clip_space.x  * 0.5 + 0.5,
+            1 - (vertex_1_in_clip_space.x  * 0.5 + 0.5),
             vertex_1_in_clip_space.y  * 0.5 + 0.5,
             vertex_1_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            vertex_2_in_clip_space.x  * 0.5 + 0.5,
+            1 - (vertex_2_in_clip_space.x  * 0.5 + 0.5),
             vertex_2_in_clip_space.y  * 0.5 + 0.5,
             vertex_2_in_clip_space.z  * 0.5 + 0.5);
 
