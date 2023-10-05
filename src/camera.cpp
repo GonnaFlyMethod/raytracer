@@ -15,6 +15,8 @@ void Camera::initilize(){
     // Determine viewport dimensions.
     auto theta = CommonMath::degrees_to_radians(vfov);
     auto h = tan(theta/2);
+
+    // TODO: move these 2 members to local scope of this function
     viewport_height = 2 * h * focus_dist;
     viewport_width = viewport_height * (static_cast<double>(image_width)/image_height);
 

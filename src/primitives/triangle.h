@@ -18,6 +18,16 @@ private:
 
     Camera cam;
 
+    double left_x_for_projection,
+           right_x_for_projection,
+           bottom_y_for_projection,
+           top_y_for_projection,
+           farthest_z_for_projection;
+
+    CommonMath::Vec3 vertex0_in_local_space;
+    CommonMath::Vec3 vertex1_in_local_space;
+    CommonMath::Vec3 vertex2_in_local_space;
+
 public:
     Triangle(
             CommonMath::Point3 vertexA,

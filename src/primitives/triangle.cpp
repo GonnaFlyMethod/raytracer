@@ -22,6 +22,54 @@ Triangle::Triangle(
     this->vertex2_vertex0_edge = vertex0 - vertex2;
 
     this->cam = camera;
+
+    CommonMath::Vec3 center_of_original_triangle = CommonMath::Vec3(
+            (vertex0.x() + vertex1.x() + vertex2.x()) / 3.0f,
+            (vertex0.y() + vertex1.y() + vertex2.y()) / 3.0f,
+            (vertex0.z() + vertex1.z() + vertex2.z()) / 3.0f);
+
+    CommonMath::Vec3 center_to_vertex0_vec =  (vertex0 - center_of_original_triangle);
+    double center_to_vertex0_vec_length = center_to_vertex0_vec.length();
+    CommonMath::Vec3 normalized_center_to_vertex0_vec = center_to_vertex0_vec.normalize();
+    this->vertex0_in_local_space = normalized_center_to_vertex0_vec * center_to_vertex0_vec_length;
+
+    CommonMath::Vec3 center_to_vertex1_vec =  (vertex1 - center_of_original_triangle);
+    double center_to_vertex1_vec_length = center_to_vertex1_vec.length();
+    CommonMath::Vec3 normalized_center_to_vertex1_vec = center_to_vertex1_vec.normalize();
+    this->vertex1_in_local_space = normalized_center_to_vertex1_vec * center_to_vertex1_vec_length;
+
+    CommonMath::Vec3 center_to_vertex2_vec =  (vertex2 - center_of_original_triangle);
+    double center_to_vertex2_vec_length = center_to_vertex2_vec.length();
+    CommonMath::Vec3 normalized_center_to_vertex2_vec = center_to_vertex2_vec.normalize();
+    this->vertex2_in_local_space = normalized_center_to_vertex2_vec * center_to_vertex2_vec_length;
+
+    std::vector<CommonMath::Point3> vertices_in_local_space{
+        vertex0_in_local_space,
+        vertex1_in_local_space,
+        vertex2_in_local_space};
+
+    std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
+              [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
+                  return a.x() < b.x();
+              });
+
+    left_x_for_projection = vertices_in_local_space[0].x();
+    right_x_for_projection = vertices_in_local_space[2].x(),
+
+    std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
+              [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
+                  return a.y() < b.y();
+              });
+
+    bottom_y_for_projection = vertices_in_local_space[0].y(),
+    top_y_for_projection = vertices_in_local_space[2].y(),
+
+    std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
+              [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
+                  return a.z() < b.z();
+              });
+
+    farthest_z_for_projection = vertices_in_local_space[2].z();
 }
 
 AABB Triangle::get_bounding_box() const {
@@ -117,46 +165,47 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     // TODO: finilize and explain the stretching of square texture during the process of blending between
     //  uv coordinates of triangle's vertices using barycentric weights
 
-
     // TODO: Now the texture maps to the triangle without wierd stretching but the orientation of
     // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
     // bigger so in this case I can observe the larger amount of texture and I then I can check whether
     // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
 
-    // TODO: !!! I should not map just to uv coordinates of screen [0;1] but map to coordinates of the texture [0;1]
-
     // TODO: try resized earthmap texture
+
     glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
 
-    glm::vec3 target(
-            (vertex0.x() + vertex1.x() + vertex2.x()) / 3.0f,
-            (vertex0.y() + vertex1.y() + vertex2.y()) / 3.0f,
-            (vertex0.z() + vertex1.z() + vertex2.z()) / 3.0f);  // Target position
-
-//    glm::vec3 target(0.0f,
-//            0.0f,
-//            0.0f);
-
+    glm::vec3 target(0.0f,
+            0.0f,
+            0.0f);
 
     glm::vec3 up(0.0f, 0.1f, 0.0f);      // Up vector
 
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
-    // TODO: Adjust the orthographic volume according to the current triangle's position on the screen
+
     glm::mat4 projectionMatrix = glm::ortho(
-            -3.0f,
-            3.0f,
-            -1.5f,
-            1.5f, -2.2f, 4.2f);
+            left_x_for_projection,
+            right_x_for_projection,
+            bottom_y_for_projection,
+            top_y_for_projection, cam.lookfrom.z(), -1.0); // TODO: replace zFar with this->farthest_z_for_projection
 
+    // TODO: z coordinate in clip space turns out to be NaN after linear transformation(all projections)
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex0.x(), vertex0.y(), vertex0.z(), 1.0f);
-    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex1.x(), vertex1.y(), vertex1.z(), 1.0f);
-    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex2.x(), vertex2.y(), vertex2.z(), 1.0f);
+            vertex0_in_local_space.x(),
+            vertex0_in_local_space.y(),
+            vertex0_in_local_space.z(), 1.0f);
 
+    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex1_in_local_space.x(),
+            vertex1_in_local_space.y(),
+            vertex1_in_local_space.z(), 1.0f);
+    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
+            vertex2_in_local_space.x(),
+            vertex2_in_local_space.y(),
+            vertex2_in_local_space.z(), 1.0f);
+
+    // TODO: some coordinates exceeds [0;1] range. Find out why
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            1 -(vertex_0_in_clip_space.x * 0.5 + 0.5),
+            1 -(vertex_0_in_clip_space.x * 0.5 + 0.5), // TODO: find out why we're flipping coordinates on X-axis in here
             vertex_0_in_clip_space.y  * 0.5 + 0.5,
             vertex_0_in_clip_space.z  * 0.5 + 0.5);
 

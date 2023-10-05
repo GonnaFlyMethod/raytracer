@@ -32,7 +32,7 @@ namespace CommonMath {
 
         double length() const;
         double length_squared() const;
-
+        Vec3 normalize() const;
     };
 
 // Type aliases for Vec3

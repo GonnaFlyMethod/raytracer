@@ -85,7 +85,14 @@ namespace CommonMath{
         return Xsqrd + Ysqrd + Zsqrd;
     }
 
-// Vec3 utility
+    CommonMath::Vec3 Vec3::normalize() const{
+        double length_of_current_vector = this->length();
+        return {data[0] / length_of_current_vector,
+                data[1] / length_of_current_vector,
+                data[2] / length_of_current_vector};
+    }
+
+    // Vec3 utility
     std::ostream& operator<<(std::ostream& out, const Vec3& v){
         return out << v.x() << ' ' << v.y() << ' ' << v.z();
     }
@@ -129,7 +136,6 @@ namespace CommonMath{
     Vec3 operator/(const Vec3& v, const double t){
         return (1/t) * v;
     }
-
 
     Vec3 reflect(const Vec3& r, const Vec3& n){
         return r - 2*dot(r,n)*n;

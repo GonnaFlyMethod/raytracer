@@ -204,10 +204,34 @@ void triangle(HittableList& world, Camera& cam){
     auto bricks_texture = std::make_shared<ImageTexture>("earthmap.jpg");
     auto bricks_lambertian_texture= std::make_shared<Lambertian>(bricks_texture);
 
+//    world.add(std::make_shared<Triangle>(
+//            CommonMath::Point3(-3.0f,-1.0f, 0.0f),
+//            CommonMath::Point3(0.0f,1.0f, 0.0f),
+//            CommonMath::Point3(3.0f,-1.0f, 0.0f),
+//            bricks_lambertian_texture, cam));
+
     world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(-1.0f,-1.0f, 0.0f),
-            CommonMath::Point3(1.0f,3.0f, 0.0f),
-            CommonMath::Point3(2.0f,-1.0f, 0.0f),
+            CommonMath::Point3(-5.0f,0.0f, 0.0f),
+            CommonMath::Point3(-3.0f,2.0f, 0.0f),
+            CommonMath::Point3(0.0f,0.0f, 0.0f),
+            bricks_lambertian_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(-5.0f,-2.0f, 0.0f),
+            CommonMath::Point3(-3.0f,0.0f, 0.0f),
+            CommonMath::Point3(0.0f,-2.0f, 0.0f),
+            bricks_lambertian_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(0.0f,0.0f, 0.0f),
+            CommonMath::Point3(2.0f,2.0f, 0.0f),
+            CommonMath::Point3(5.0f,0.0f, 0.0f),
+            bricks_lambertian_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(0.0f,-2.0f, 0.0f),
+            CommonMath::Point3(2.0f,0.0f, 0.0f),
+            CommonMath::Point3(5.0f,-2.0f, 0.0f),
             bricks_lambertian_texture, cam));
 
     cam.aspect_ratio = 16.0f / 9.0f;
@@ -216,7 +240,7 @@ void triangle(HittableList& world, Camera& cam){
     cam.max_depth = 50;
 
     cam.vfov = 80.0f;
-    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,2.2f);
+    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,3.0f);
     cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
     cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
 
