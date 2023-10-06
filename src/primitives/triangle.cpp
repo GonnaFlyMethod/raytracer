@@ -125,31 +125,6 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     CommonMath::Point3 intersection_point = r.at(appropriate_direction_scaler);
 
-//    CommonMath::Vec3 vertex0_intersection_point_vec = intersection_point - vertex0;
-//
-//    CommonMath::Vec3 C0 = cross(vertex0_vertex1_edge, vertex0_intersection_point_vec);
-//    bool is_intersection_point_on_left_side_of_edge = dot(this->normal, C0) > 0;
-//
-//    if (!is_intersection_point_on_left_side_of_edge){
-//        return false;
-//    }
-//
-//    CommonMath::Vec3 vertex1_intersection_point_vec = intersection_point - vertex1;
-//    CommonMath::Vec3 C1 = cross(vertex1_vertex2_edge, vertex1_intersection_point_vec);
-//
-//    is_intersection_point_on_left_side_of_edge = dot(this->normal, C1) > 0;
-//    if (!is_intersection_point_on_left_side_of_edge){
-//        return false;
-//    }
-//
-//    CommonMath::Vec3 vertex2_intersection_point_vec = intersection_point - vertex2;
-//    CommonMath::Vec3 C2 = cross(vertex2_vertex0_edge, vertex2_intersection_point_vec);
-//
-//    is_intersection_point_on_left_side_of_edge = dot(this->normal, C2) > 0;
-//    if (!is_intersection_point_on_left_side_of_edge){
-//        return false;
-//    }
-
     double a = this->vertex0_vertex1_edge.length();
     double b = this->vertex1_vertex2_edge.length();
     double c = this->vertex2_vertex0_edge.length();
@@ -165,22 +140,31 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             v2_intersection_point_vec,
             b) / area_of_whole_triangle;
 
+    if (alpha < 0){
+        return false;
+    }
+
     double beta = CommonMath::calculate_area_of_triangle(
             v0_intersection_point_vec,
             v2_intersection_point_vec,
             c) / area_of_whole_triangle;
+
+    if (beta < 0){
+        return false;
+    }
 
     double gamma = CommonMath::calculate_area_of_triangle(
             v0_intersection_point_vec,
             v1_intersection_point_vec,
             a) / area_of_whole_triangle;
 
-    bool does_hit_triangle = (alpha >= 0 && beta >= 0 && gamma >= 0) && (alpha + beta + gamma <= 1.0001f);
-
-    if (!does_hit_triangle){
+    if (gamma < 0){
         return false;
     }
 
+    if (alpha + beta + gamma > 1.0001f){
+        return false;
+    }
 
     // TODO: finilize and explain the stretching of square texture during the process of blending between
     //  uv coordinates of triangle's vertices using barycentric weights
