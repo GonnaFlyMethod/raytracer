@@ -218,7 +218,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             0.0f,
             0.0f);
 
-    glm::vec3 up(0.0f, 0.1f, 0.0f);      // Up vector
+    glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
 
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
 
@@ -244,17 +244,17 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex2_in_local_space.z(), 1.0f);
 
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(1 -(vertex_0_in_clip_space.x * 0.5 + 0.5), 0.0, 1.0), // TODO: find out why we're flipping coordinates on X-axis in here
+            CommonMath::clamp(vertex_0_in_clip_space.x * 0.5 + 0.5, 0.0, 1.0), // TODO: find out why we're flipping coordinates on X-axis in here
             CommonMath::clamp(vertex_0_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
             vertex_0_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(1 - (vertex_1_in_clip_space.x  * 0.5 + 0.5), 0.0, 1.0),
+            CommonMath::clamp(vertex_1_in_clip_space.x  * 0.5 + 0.5, 0.0, 1.0),
             CommonMath::clamp(vertex_1_in_clip_space.y  * 0.5 + 0.5, 0, 1.0),
             vertex_1_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(1 - (vertex_2_in_clip_space.x  * 0.5 + 0.5), 0.0, 1.0),
+            CommonMath::clamp(vertex_2_in_clip_space.x  * 0.5 + 0.5, 0.0, 1.0),
             CommonMath::clamp(vertex_2_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
             vertex_2_in_clip_space.z  * 0.5 + 0.5);
 

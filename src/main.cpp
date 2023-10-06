@@ -56,9 +56,9 @@ int main(int argc, char** argv) {
             quads(world, cam);
             break;
         case 6:
-            std::clog << "1 triangle will be drawn" << '\n';
+            std::clog << "1 triangles will be drawn" << '\n';
 
-            triangle(world, cam);
+            triangles(world, cam);
             break;
         default:
             std::clog << "Random spheres will be drawn(default scene)" << '\n';
