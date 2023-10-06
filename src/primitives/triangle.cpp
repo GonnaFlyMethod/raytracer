@@ -150,65 +150,33 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
         return false;
     }
 
-    double a_side_of_whole_triangle = this->vertex0_vertex1_edge.length();
-    double b_side_of_whole_triangle = this->vertex1_vertex2_edge.length();
-    double c_side_of_whole_triangle = this->vertex2_vertex0_edge.length();
+    double a = this->vertex0_vertex1_edge.length();
+    double b = this->vertex1_vertex2_edge.length();
+    double c = this->vertex2_vertex0_edge.length();
 
-    double semi_perimeter = (a_side_of_whole_triangle + b_side_of_whole_triangle + c_side_of_whole_triangle) / 2.0f;
+    double area_of_whole_triangle = CommonMath::calculate_area_of_triangle(a , b, c );
 
-    double area_of_whole_triangle =
-        sqrt(semi_perimeter * (semi_perimeter - a_side_of_whole_triangle) *
-            (semi_perimeter - b_side_of_whole_triangle) *
-            (semi_perimeter - c_side_of_whole_triangle));
+    double v0_intersection_point_vec = (intersection_point - vertex0).length();
+    double v1_intersection_point_vec = (intersection_point - vertex1).length();
+    double v2_intersection_point_vec = (intersection_point - vertex2).length();
 
-    // V1PV2 sub triangle
-    double v1_p_a_side = (intersection_point - vertex1).length();
-    double v2_p_b_side = (intersection_point - vertex2).length();
-    double v1_p_v2_semi_perimeter = (v1_p_a_side + v2_p_b_side + b_side_of_whole_triangle) / 2.0f;
+    double alpha = CommonMath::calculate_area_of_triangle(
+            v1_intersection_point_vec,
+            v2_intersection_point_vec,
+            b) / area_of_whole_triangle;
 
-    double v1_p_v2_area = sqrt(v1_p_v2_semi_perimeter *
-                               (v1_p_v2_semi_perimeter - v1_p_a_side) *
-                               (v1_p_v2_semi_perimeter - v2_p_b_side) *
-                               (v1_p_v2_semi_perimeter - b_side_of_whole_triangle));
+    double beta = CommonMath::calculate_area_of_triangle(
+            v0_intersection_point_vec,
+            v2_intersection_point_vec,
+            c) / area_of_whole_triangle;
 
-    double alpha = v1_p_v2_area / area_of_whole_triangle;
-
-    // V1PV2 sub triangle
-    double v0_p_a_side = (intersection_point - vertex0).length();
-    v2_p_b_side = (intersection_point - vertex2).length();
-    double v2_p_v0_semi_perimeter = (v0_p_a_side + v2_p_b_side + c_side_of_whole_triangle) / 2.0f;
-
-    double v2_p_v0_area = sqrt(v2_p_v0_semi_perimeter *
-                               (v2_p_v0_semi_perimeter - v0_p_a_side) *
-                               (v2_p_v0_semi_perimeter - v2_p_b_side) *
-                               (v2_p_v0_semi_perimeter - c_side_of_whole_triangle));
-
-    double beta = v2_p_v0_area / area_of_whole_triangle;
-
-    // V0PV1 sub triangle
-    v0_p_a_side = (intersection_point - vertex0).length();
-    double v1_p_b_side = (intersection_point - vertex1).length();
-    double v0_p_v1_semi_perimeter = (v0_p_a_side + v1_p_b_side + a_side_of_whole_triangle) / 2.0f;
-
-    double v0_p_v1_area = sqrt(v0_p_v1_semi_perimeter *
-            (v0_p_v1_semi_perimeter - v0_p_a_side) *
-            (v0_p_v1_semi_perimeter - v1_p_b_side) *
-            (v0_p_v1_semi_perimeter - a_side_of_whole_triangle));
-
-    double gamma = v0_p_v1_area / area_of_whole_triangle;
-
-    // TODO: remap barycentric coordinates to uv coordinates;
-    // https://plugincafe.maxon.net/topic/9630/12933_convert-barycentric-coords-to-uv-coords/2
-    // https://stackoverflow.com/questions/23980748/triangle-texture-mapping-with-barycentric-coordinates
-    // https://computergraphics.stackexchange.com/questions/1866/how-to-map-square-texture-to-triangle
+    double gamma = CommonMath::calculate_area_of_triangle(
+            v0_intersection_point_vec,
+            v1_intersection_point_vec,
+            a) / area_of_whole_triangle;
 
     // TODO: finilize and explain the stretching of square texture during the process of blending between
     //  uv coordinates of triangle's vertices using barycentric weights
-
-    // TODO: Now the texture maps to the triangle without wierd stretching but the orientation of
-    // vertices in uv space is incorrect. Find out why and fix that. Pro-tip: it's good to make triangle
-    // bigger so in this case I can observe the larger amount of texture and I then I can check whether
-    // the orientation of vertices are correct. (Find out why 0.6 in uv space does not represent the same height in the texture space)
 
     // TODO: try resized earthmap texture
 
@@ -226,9 +194,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             left_x_for_projection,
             right_x_for_projection,
             bottom_y_for_projection,
-            top_y_for_projection, 0.1, farthest_z_for_projection); // TODO: replace zFar with this->farthest_z_for_projection
+            top_y_for_projection, 0.1, farthest_z_for_projection);
 
-    // TODO: z coordinate in clip space turns out to be NaN after linear transformation(all projections)
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex0_in_local_space.x(),
             vertex0_in_local_space.y(),
@@ -244,7 +211,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex2_in_local_space.z(), 1.0f);
 
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(vertex_0_in_clip_space.x * 0.5 + 0.5, 0.0, 1.0), // TODO: find out why we're flipping coordinates on X-axis in here
+            CommonMath::clamp(vertex_0_in_clip_space.x * 0.5 + 0.5, 0.0, 1.0),
             CommonMath::clamp(vertex_0_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
             vertex_0_in_clip_space.z  * 0.5 + 0.5);
 
