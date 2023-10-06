@@ -3,6 +3,7 @@
 #include "../external/glm/glm.hpp"
 #include "../external/glm/ext/matrix_transform.hpp"
 #include "../external/glm/ext/matrix_clip_space.hpp"
+#include "../common_math/other.h"
 
 
 Triangle::Triangle(
@@ -62,14 +63,53 @@ Triangle::Triangle(
               });
 
     bottom_y_for_projection = vertices_in_local_space[0].y(),
-    top_y_for_projection = vertices_in_local_space[2].y(),
+    top_y_for_projection = vertices_in_local_space[2].y();
+
+    double original_width{};
+
+    if (left_x_for_projection < 0 && right_x_for_projection > 0){
+        original_width = std::abs(left_x_for_projection) + std::abs(right_x_for_projection);
+    }else{
+        original_width = std::abs(std::abs(right_x_for_projection) - std::abs(left_x_for_projection));
+    }
+
+    double original_height{};
+
+    if (bottom_y_for_projection < 0 && top_y_for_projection > 0){
+        original_height = std::abs(bottom_y_for_projection) + std::abs(top_y_for_projection);
+    }else{
+        original_height = std::abs(std::abs(top_y_for_projection) - std::abs(bottom_y_for_projection));
+    }
+
+    double original_height_multiplied_by_2 = original_height * 2.0f;
+
+    if (original_width < original_height_multiplied_by_2){
+        double delta_width = original_height_multiplied_by_2 - original_width;
+        double half_of_padding = delta_width / 2.0f;
+
+        left_x_for_projection -= half_of_padding;
+        right_x_for_projection += half_of_padding;
+    }else if (original_width > original_height_multiplied_by_2){
+        double delta_height = original_width - original_height_multiplied_by_2;
+        double half_of_padding = delta_height / 2.0f;
+
+        bottom_y_for_projection -= half_of_padding;
+        top_y_for_projection += half_of_padding;
+    }
 
     std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
               [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
                   return a.z() < b.z();
               });
 
-    farthest_z_for_projection = vertices_in_local_space[2].z();
+    double farthest_object_z = vertices_in_local_space[2].z();
+    double camera_lookfrom_z = cam.lookfrom.z();
+
+    if (farthest_object_z < 0 && camera_lookfrom_z > 0 || farthest_object_z > 0 && camera_lookfrom_z < 0){
+        farthest_z_for_projection = std::abs(farthest_object_z) + std::abs(camera_lookfrom_z);
+    }else{
+        farthest_z_for_projection = std::abs(std::abs(farthest_object_z) - std::abs(camera_lookfrom_z));
+    }
 }
 
 AABB Triangle::get_bounding_box() const {
@@ -186,7 +226,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             left_x_for_projection,
             right_x_for_projection,
             bottom_y_for_projection,
-            top_y_for_projection, cam.lookfrom.z(), -1.0); // TODO: replace zFar with this->farthest_z_for_projection
+            top_y_for_projection, 0.1, farthest_z_for_projection); // TODO: replace zFar with this->farthest_z_for_projection
 
     // TODO: z coordinate in clip space turns out to be NaN after linear transformation(all projections)
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
@@ -203,20 +243,19 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex2_in_local_space.y(),
             vertex2_in_local_space.z(), 1.0f);
 
-    // TODO: some coordinates exceeds [0;1] range. Find out why
     glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            1 -(vertex_0_in_clip_space.x * 0.5 + 0.5), // TODO: find out why we're flipping coordinates on X-axis in here
-            vertex_0_in_clip_space.y  * 0.5 + 0.5,
+            CommonMath::clamp(1 -(vertex_0_in_clip_space.x * 0.5 + 0.5), 0.0, 1.0), // TODO: find out why we're flipping coordinates on X-axis in here
+            CommonMath::clamp(vertex_0_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
             vertex_0_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            1 - (vertex_1_in_clip_space.x  * 0.5 + 0.5),
-            vertex_1_in_clip_space.y  * 0.5 + 0.5,
+            CommonMath::clamp(1 - (vertex_1_in_clip_space.x  * 0.5 + 0.5), 0.0, 1.0),
+            CommonMath::clamp(vertex_1_in_clip_space.y  * 0.5 + 0.5, 0, 1.0),
             vertex_1_in_clip_space.z  * 0.5 + 0.5);
 
     glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            1 - (vertex_2_in_clip_space.x  * 0.5 + 0.5),
-            vertex_2_in_clip_space.y  * 0.5 + 0.5,
+            CommonMath::clamp(1 - (vertex_2_in_clip_space.x  * 0.5 + 0.5), 0.0, 1.0),
+            CommonMath::clamp(vertex_2_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
             vertex_2_in_clip_space.z  * 0.5 + 0.5);
 
     std::vector<CommonMath::Vec3> vertices_in_uv_space {
