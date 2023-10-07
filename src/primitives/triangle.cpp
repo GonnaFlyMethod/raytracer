@@ -4,6 +4,8 @@
 #include "../external/glm/ext/matrix_transform.hpp"
 #include "../external/glm/ext/matrix_clip_space.hpp"
 #include "../common_math/other.h"
+#include "../common_math/mat4.h"
+#include "../common_math/mat4_transform.h"
 
 
 Triangle::Triangle(
@@ -181,6 +183,13 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
 
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
+
+    CommonMath::Vec3 position_custom = CommonMath::Vec3(position.x, position.y, position.z);
+    CommonMath::Vec3 target_custom = CommonMath::Vec3(0.0, 0.0, 0.0);
+    CommonMath::Vec3 up_custom = CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z());
+
+    CommonMath::Mat4 view_matrix_custom = CommonMath::look_at_for_view_projection(
+            position_custom, target_custom, up_custom);
 
     glm::mat4 projectionMatrix = glm::ortho(
             left_x_for_projection,

@@ -1,4 +1,4 @@
-#include "mat.h"
+#include "mat4.h"
 
 namespace CommonMath{
     std::vector<double>& Mat4::operator[](int i){

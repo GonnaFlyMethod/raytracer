@@ -6,7 +6,13 @@
 namespace CommonMath{
     class Mat4 {
         private:
-            std::vector<std::vector<double>> data;
+            std::vector<std::vector<double>> data = std::vector<std::vector<double>>{
+                    std::vector<double>{1.0, 0.0, 0.0, 0.0},
+                    std::vector<double>{0.0, 1.0, 0.0, 0.0},
+                    std::vector<double>{0.0, 0.0, 1.0, 0.0},
+                    std::vector<double>{0.0, 0.0, 0.0, 1.0}
+            };
+
         public:
             Mat4() = default;
             std::vector<double>& operator[](int i);
