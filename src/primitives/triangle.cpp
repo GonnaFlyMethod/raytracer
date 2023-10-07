@@ -116,6 +116,7 @@ AABB Triangle::get_bounding_box() const {
     return this->box;
 }
 
+
 bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const {
     double appropriate_direction_scaler;
 
