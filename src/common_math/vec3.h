@@ -7,7 +7,7 @@
 namespace CommonMath {
     class Vec3{
     private:
-        std::vector<double> data {0,0,0};
+        std::vector<double> data {0.0, 0.0, 0.0};
 
     public:
         Vec3() =default;

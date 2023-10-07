@@ -6,6 +6,7 @@
 #include "../common_math/other.h"
 #include "../common_math/mat4.h"
 #include "../common_math/mat4_transform.h"
+#include "../common_math/vec4.h"
 
 
 Triangle::Triangle(
@@ -182,14 +183,28 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
 
+
+    CommonMath::Mat4 view_matrix = CommonMath::look_at_for_view_projection(
+            CommonMath::Vec3(position.x, position.y, position.z),
+            CommonMath::Vec3(0.0, 0.0, 0.0),
+            CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z()));
+
+    CommonMath::Mat4 orthographic_projection = CommonMath::orthographic_projection(
+            this->left_x_for_projection,
+            this->right_x_for_projection,
+            this->bottom_y_for_projection,
+            this->top_y_for_projection,
+            0.1,
+            this->farthest_z_for_projection
+    );
+
+    // TODO: The final vector (vertex_0_in_clip_space_custom) contains incorrect values:
+    CommonMath::Vec4 vertex_0_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+            vertex0_in_local_space.x(),
+            vertex0_in_local_space.y(),
+            vertex0_in_local_space.z(), 1.0f);
+
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
-
-    CommonMath::Vec3 position_custom = CommonMath::Vec3(position.x, position.y, position.z);
-    CommonMath::Vec3 target_custom = CommonMath::Vec3(0.0, 0.0, 0.0);
-    CommonMath::Vec3 up_custom = CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z());
-
-    CommonMath::Mat4 view_matrix_custom = CommonMath::look_at_for_view_projection(
-            position_custom, target_custom, up_custom);
 
     glm::mat4 projectionMatrix = glm::ortho(
             left_x_for_projection,
@@ -206,6 +221,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             vertex1_in_local_space.x(),
             vertex1_in_local_space.y(),
             vertex1_in_local_space.z(), 1.0f);
+
     glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex2_in_local_space.x(),
             vertex2_in_local_space.y(),
