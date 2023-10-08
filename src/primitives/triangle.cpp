@@ -198,6 +198,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             this->farthest_z_for_projection
     );
 
+    CommonMath::Mat4 matrix_mul_custom = orthographic_projection * view_matrix;
+
     // TODO: The final vector (vertex_0_in_clip_space_custom) contains incorrect values:
     CommonMath::Vec4 vertex_0_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
             vertex0_in_local_space.x(),
@@ -211,6 +213,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             right_x_for_projection,
             bottom_y_for_projection,
             top_y_for_projection, 0.1, farthest_z_for_projection);
+
+    glm::mat4 matix_mul = projectionMatrix * viewMatrix;
 
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex0_in_local_space.x(),

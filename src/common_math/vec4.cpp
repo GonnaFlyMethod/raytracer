@@ -8,6 +8,13 @@ namespace CommonMath{
         this->data[3] = w;
     }
 
+    Vec4::Vec4(std::vector<double> v){
+        this->data[0] = v[0];
+        this->data[1] = v[1];
+        this->data[2] = v[2];
+        this->data[3] = v[3];
+    }
+
     double Vec4::x() const {
         return this->data[0];
     }
@@ -41,5 +48,27 @@ namespace CommonMath{
         result[0] = (m[3][0] * v[0]) + (m[3][1] * v[1]) + (m[3][2] * v[2]) + (m[3][3] * v[3]);
 
         return result;
+    }
+
+    Vec4 operator*(const double t, const Vec4& v){
+        return {
+                t * v.x(),
+                t * v.y(),
+                t * v.z(),
+                t * v.w()
+        };
+    }
+
+    Vec4 operator*(const Vec4& v, const double t){
+        return t * v;
+    }
+
+    Vec4 operator+(const Vec4& v1, const Vec4& v2){
+        return {
+                v1.x() + v2.x(),
+                v1.y() + v2.y(),
+                v1.z() + v2.z(),
+                v1.w() + v2.w(),
+        };
     }
 }

@@ -10,6 +10,7 @@ namespace CommonMath{
     public:
         Vec4() = default;
         Vec4(double x, double y, double z, double w);
+        Vec4(std::vector<double> v);
 
         double x() const;
         double y() const;
@@ -21,4 +22,9 @@ namespace CommonMath{
     };
 
     Vec4 operator*(const Mat4& m, const Vec4& v);
+
+    Vec4 operator*(const double t, const Vec4& v);
+    Vec4 operator*(const Vec4& v, const double t);
+
+    Vec4 operator+(const Vec4& v1, const Vec4& v2);
 }
