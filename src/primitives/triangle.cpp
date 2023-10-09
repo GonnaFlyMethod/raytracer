@@ -1,13 +1,8 @@
 #include <algorithm>
 #include "triangle.h"
-#include "../external/glm/glm.hpp"
-#include "../external/glm/ext/matrix_transform.hpp"
-#include "../external/glm/ext/matrix_clip_space.hpp"
 #include "../common_math/other.h"
 #include "../common_math/mat4.h"
 #include "../common_math/mat4_transform.h"
-#include "../common_math/vec4.h"
-
 
 Triangle::Triangle(
         CommonMath::Point3 vertex0,
@@ -170,23 +165,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
         return false;
     }
 
-    // TODO: finilize and explain the stretching of square texture during the process of blending between
-    //  uv coordinates of triangle's vertices using barycentric weights
-
-    // TODO: try resized earthmap texture
-
-    glm::vec3 position(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()); // Camera position
-
-    glm::vec3 target(0.0f,
-            0.0f,
-            0.0f);
-
-    glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
-
-    // Custom section
-    // TODO: The final vector (vertex_0_in_clip_space_custom) contains incorrect values:
     CommonMath::Mat4 view_matrix = CommonMath::look_at_for_view_projection(
-            CommonMath::Vec3(position.x, position.y, position.z),
+            CommonMath::Vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()),
             CommonMath::Vec3(0.0, 0.0, 0.0),
             CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z()));
 
@@ -199,73 +179,44 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             this->farthest_z_for_projection
     );
 
-    CommonMath::Vec4 vertex_0_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+    CommonMath::Vec4 vertex_0_in_clip_space = orthographic_projection * view_matrix * CommonMath::Vec4(
             vertex0_in_local_space.x(),
             vertex0_in_local_space.y(),
             vertex0_in_local_space.z(), 1.0f);
 
-    CommonMath::Vec4 vertex_1_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+    CommonMath::Vec4 vertex_1_in_clip_space = orthographic_projection * view_matrix * CommonMath::Vec4(
             vertex1_in_local_space.x(),
             vertex1_in_local_space.y(),
             vertex1_in_local_space.z(), 1.0f);
 
-    CommonMath::Vec4 vertex_2_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+    CommonMath::Vec4 vertex_2_in_clip_space = orthographic_projection * view_matrix * CommonMath::Vec4(
             vertex2_in_local_space.x(),
             vertex2_in_local_space.y(),
             vertex2_in_local_space.z(), 1.0f);
 
-    // Custom section
-    glm::mat4 viewMatrix = glm::lookAt(position, target, up);
+    CommonMath::Vec3 vertex0_in_uv_space = CommonMath::Vec3(
+            CommonMath::clamp(vertex_0_in_clip_space.x() * 0.5 + 0.5, 0.0, 1.0),
+            CommonMath::clamp(vertex_0_in_clip_space.y()  * 0.5 + 0.5, 0.0, 1.0),
+            0.0);
 
-    glm::mat4 projectionMatrix = glm::ortho(
-            left_x_for_projection,
-            right_x_for_projection,
-            bottom_y_for_projection,
-            top_y_for_projection, 0.1, farthest_z_for_projection);
+    CommonMath::Vec3 vertex1_in_uv_space = CommonMath::Vec3(
+            CommonMath::clamp(vertex_1_in_clip_space.x() * 0.5 + 0.5, 0.0, 1.0),
+            CommonMath::clamp(vertex_1_in_clip_space.y()  * 0.5 + 0.5, 0.0, 1.0),
+            0.0);
 
-    glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex0_in_local_space.x(),
-            vertex0_in_local_space.y(),
-            vertex0_in_local_space.z(), 1.0f);
+    CommonMath::Vec3 vertex2_in_uv_space = CommonMath::Vec3(
+            CommonMath::clamp(vertex_2_in_clip_space.x() * 0.5 + 0.5, 0.0, 1.0),
+            CommonMath::clamp(vertex_2_in_clip_space.y()  * 0.5 + 0.5, 0.0, 1.0),
+            0.0);
 
-    glm::vec4 vertex_1_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex1_in_local_space.x(),
-            vertex1_in_local_space.y(),
-            vertex1_in_local_space.z(), 1.0f);
 
-    glm::vec4 vertex_2_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
-            vertex2_in_local_space.x(),
-            vertex2_in_local_space.y(),
-            vertex2_in_local_space.z(), 1.0f);
+    rec.u = (vertex0_in_uv_space.x() * alpha) +
+            (vertex1_in_uv_space.x() * beta) +
+            (vertex2_in_uv_space.x() * gamma);
 
-    glm::vec3 vertex_0_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(vertex_0_in_clip_space.x * 0.5 + 0.5, 0.0, 1.0),
-            CommonMath::clamp(vertex_0_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
-            vertex_0_in_clip_space.z  * 0.5 + 0.5);
-
-    glm::vec3 vertex_1_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(vertex_1_in_clip_space.x  * 0.5 + 0.5, 0.0, 1.0),
-            CommonMath::clamp(vertex_1_in_clip_space.y  * 0.5 + 0.5, 0, 1.0),
-            vertex_1_in_clip_space.z  * 0.5 + 0.5);
-
-    glm::vec3 vertex_2_in_normalized_device_space = glm::vec3(
-            CommonMath::clamp(vertex_2_in_clip_space.x  * 0.5 + 0.5, 0.0, 1.0),
-            CommonMath::clamp(vertex_2_in_clip_space.y  * 0.5 + 0.5, 0.0, 1.0),
-            vertex_2_in_clip_space.z  * 0.5 + 0.5);
-
-    std::vector<CommonMath::Vec3> vertices_in_uv_space {
-            CommonMath::Vec3(vertex_0_in_normalized_device_space.x, vertex_0_in_normalized_device_space.y, vertex_0_in_normalized_device_space.z),
-            CommonMath::Vec3(vertex_1_in_normalized_device_space.x, vertex_1_in_normalized_device_space.y, vertex_1_in_normalized_device_space.z),
-            CommonMath::Vec3(vertex_2_in_normalized_device_space.x, vertex_2_in_normalized_device_space.y, vertex_2_in_normalized_device_space.z),
-    };
-
-    rec.u = (vertices_in_uv_space[0].x() * alpha) +
-            (vertices_in_uv_space[1].x() * beta) +
-            (vertices_in_uv_space[2].x() * gamma);
-
-    rec.v = (vertices_in_uv_space[0].y() * alpha) +
-            (vertices_in_uv_space[1].y() * beta) +
-            (vertices_in_uv_space[2].y() * gamma);
+    rec.v = (vertex0_in_uv_space.y() * alpha) +
+            (vertex1_in_uv_space.y() * beta) +
+            (vertex2_in_uv_space.y() * gamma);
 
     rec.t = appropriate_direction_scaler;
     rec.p = intersection_point;
