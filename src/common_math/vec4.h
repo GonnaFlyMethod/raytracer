@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include "mat4.h"
 
 namespace CommonMath{
     class Vec4 {
@@ -20,10 +19,6 @@ namespace CommonMath{
         double operator[](int i ) const;
         double& operator[](int i );
     };
-
-    Vec4 operator*(const Mat4& m, const Vec4& v);
-
-    Vec4 operator*(const double t, const Vec4& v);
     Vec4 operator*(const Vec4& v, const double t);
 
     Vec4 operator+(const Vec4& v1, const Vec4& v2);

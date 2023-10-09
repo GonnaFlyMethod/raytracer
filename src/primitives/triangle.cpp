@@ -183,7 +183,8 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
 
     glm::vec3 up(cam.vup.x(), cam.vup.y(), cam.vup.z());      // Up vector
 
-
+    // Custom section
+    // TODO: The final vector (vertex_0_in_clip_space_custom) contains incorrect values:
     CommonMath::Mat4 view_matrix = CommonMath::look_at_for_view_projection(
             CommonMath::Vec3(position.x, position.y, position.z),
             CommonMath::Vec3(0.0, 0.0, 0.0),
@@ -198,14 +199,22 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             this->farthest_z_for_projection
     );
 
-    CommonMath::Mat4 matrix_mul_custom = orthographic_projection * view_matrix;
-
-    // TODO: The final vector (vertex_0_in_clip_space_custom) contains incorrect values:
     CommonMath::Vec4 vertex_0_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
             vertex0_in_local_space.x(),
             vertex0_in_local_space.y(),
             vertex0_in_local_space.z(), 1.0f);
 
+    CommonMath::Vec4 vertex_1_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+            vertex1_in_local_space.x(),
+            vertex1_in_local_space.y(),
+            vertex1_in_local_space.z(), 1.0f);
+
+    CommonMath::Vec4 vertex_2_in_clip_space_custom = orthographic_projection * view_matrix * CommonMath::Vec4(
+            vertex2_in_local_space.x(),
+            vertex2_in_local_space.y(),
+            vertex2_in_local_space.z(), 1.0f);
+
+    // Custom section
     glm::mat4 viewMatrix = glm::lookAt(position, target, up);
 
     glm::mat4 projectionMatrix = glm::ortho(
@@ -213,8 +222,6 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             right_x_for_projection,
             bottom_y_for_projection,
             top_y_for_projection, 0.1, farthest_z_for_projection);
-
-    glm::mat4 matix_mul = projectionMatrix * viewMatrix;
 
     glm::vec4 vertex_0_in_clip_space = projectionMatrix * viewMatrix * glm::vec4(
             vertex0_in_local_space.x(),

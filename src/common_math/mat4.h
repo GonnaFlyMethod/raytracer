@@ -18,8 +18,10 @@ namespace CommonMath{
             Mat4() = default;
 
             Vec4& operator[](int i);
+            const Vec4* operator[](double i) const;
             const Vec4& operator[](int i) const;
     };
 
+    Vec4 operator*(const Mat4& m, const Vec4& v);
     Mat4 operator*(const Mat4& m1, const Mat4& m2);
 }
