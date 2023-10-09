@@ -82,3 +82,6 @@ Perlin texture(gradient version) with turbulence and sin(x) phases:
 
 Quads:
 ![](./collection/quads.png)
+
+Triangles:
+![](./collection/triangles_with_textures.png)
