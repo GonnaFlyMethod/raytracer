@@ -7,7 +7,7 @@
 namespace CommonMath {
     class Vec3{
     private:
-        std::vector<double> data {0,0,0};
+        std::vector<double> data {0.0, 0.0, 0.0};
 
     public:
         Vec3() =default;
@@ -30,9 +30,9 @@ namespace CommonMath {
         Vec3& operator*=(const double val);
         Vec3& operator/=(const double val);
 
-        double length();
-        double length_squared();
-
+        double length() const;
+        double length_squared() const;
+        Vec3 normalize() const;
     };
 
 // Type aliases for Vec3
@@ -55,6 +55,7 @@ namespace CommonMath {
 
     double dot(const Vec3& a, const Vec3& b);
     Vec3 cross(const Vec3& a, const Vec3& b);
+    Vec3 project(const Vec3& source, const Vec3& base);
 
     Vec3 unit_vector(Vec3 v);
 

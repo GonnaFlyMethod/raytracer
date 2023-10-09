@@ -73,11 +73,11 @@ namespace CommonMath{
         return *this *= 1/val;
     }
 
-    double Vec3::length(){
+    double Vec3::length() const {
         return sqrt(length_squared());
     }
 
-    double Vec3::length_squared(){
+    double Vec3::length_squared() const{
         double Xsqrd = data[0] * data[0];
         double Ysqrd = data[1] * data[1];
         double Zsqrd = data[2] * data[2];
@@ -85,7 +85,14 @@ namespace CommonMath{
         return Xsqrd + Ysqrd + Zsqrd;
     }
 
-// Vec3 utility
+    CommonMath::Vec3 Vec3::normalize() const{
+        double length_of_current_vector = this->length();
+        return {data[0] / length_of_current_vector,
+                data[1] / length_of_current_vector,
+                data[2] / length_of_current_vector};
+    }
+
+    // Vec3 utility
     std::ostream& operator<<(std::ostream& out, const Vec3& v){
         return out << v.x() << ' ' << v.y() << ' ' << v.z();
     }
@@ -130,7 +137,6 @@ namespace CommonMath{
         return (1/t) * v;
     }
 
-
     Vec3 reflect(const Vec3& r, const Vec3& n){
         return r - 2*dot(r,n)*n;
     }
@@ -154,6 +160,16 @@ namespace CommonMath{
                 b.x() * a.z() - a.x() * b.z(),
                 a.x()* b.y() - b.x() * a.y()
         };
+    }
+
+    Vec3 project(const Vec3& source, const Vec3& base){
+        double projection_percentage = dot(source, base) / (
+                (base.x() * base.x()) +(base.y() * base.y()) + (base.z() * base.z()));
+
+        return {
+            projection_percentage * base.x(),
+            projection_percentage * base.y(),
+            projection_percentage * base.z()};
     }
 
     inline Vec3 unit_vector(Vec3 v) {

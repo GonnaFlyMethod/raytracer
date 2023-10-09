@@ -1,7 +1,8 @@
 #include "scenes.h"
 #include "material.h"
-#include "sphere.h"
-#include "quad.h"
+#include "primitives/sphere.h"
+#include "primitives/quad.h"
+#include "primitives/triangle.h"
 
 void random_spheres(HittableList& world, Camera& cam){
     auto checker_texture = std::make_shared<CheckerTexture>(
@@ -187,7 +188,7 @@ void quads(HittableList& world, Camera& cam){
                     lower_teal));
 
     cam.aspect_ratio = 16.0f / 9.0f;
-    cam.image_width = 1280;
+    cam.image_width = 400;
     cam.samples_per_pixel = 50;
     cam.max_depth = 50;
 
@@ -197,4 +198,48 @@ void quads(HittableList& world, Camera& cam){
     cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
 
     cam.defocus_angle = 0;
+}
+
+void triangles(HittableList& world, Camera& cam){
+    cam.aspect_ratio = 16.0f / 9.0f;
+    cam.image_width = 400;
+    cam.samples_per_pixel = 50;
+    cam.max_depth = 50;
+
+    cam.vfov = 80.0f;
+    cam.lookfrom = CommonMath::Point3(0.0f,0.0f,4.0f);
+    cam.lookat   = CommonMath::Point3(0.0f,0.0f,0.0f);
+    cam.vup      = CommonMath::Vec3(0.0f,1.0f,0.0f);
+
+    cam.defocus_angle = 0;
+
+    auto earth_texture = std::make_shared<ImageTexture>("earthmap.jpg");
+    auto lambertian_with_earth_texture= std::make_shared<Lambertian>(earth_texture);
+
+    auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");
+    auto lambertian_with_bricks_texture = std::make_shared<Lambertian>(bricks_texture);
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(-1.5f,-1.0f, 0.0f),
+            CommonMath::Point3(-0.2f,3.0f, 0.0f),
+            CommonMath::Point3(-0.0f,-1.0f, -2.0f),
+            lambertian_with_bricks_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(-5.5f,2.0f, 0.0f),
+            CommonMath::Point3(-3.5f,-2.5f, -1.0f),
+            CommonMath::Point3(-2.5f,1.0f, -2.0f),
+            lambertian_with_earth_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(0.5f,0.0f, 0.0f),
+            CommonMath::Point3(2.5f,2.0f, 0.0f),
+            CommonMath::Point3(5.5f,0.0f, 0.0f),
+            lambertian_with_bricks_texture, cam));
+
+    world.add(std::make_shared<Triangle>(
+            CommonMath::Point3(0.0f,-3.0f, -5.0f),
+            CommonMath::Point3(2.0f,-1.0f, 0.0f),
+            CommonMath::Point3(5.0f,-3.0f, 0.0f),
+            lambertian_with_earth_texture, cam));
 }

@@ -37,6 +37,8 @@ private:
     void initilize();
 
 public:
+    double viewport_height, viewport_width;
+
     double aspect_ratio = 1.0; // Ratio of image: width / height
     int image_width = 100; // Rendered image width in pixel count
     int samples_per_pixel = 10; // Count of random samples
@@ -52,6 +54,8 @@ public:
     double focus_dist = 10.0f; // Distance from camera lookfrom position to the plane of perfect focus
 
     int get_calculated_image_height() const;
+
+    std::vector<double> convert_to_clip_space_coords(CommonMath::Vec3 input_vector) const;
 
     CommonMath::Color ray_color(const CommonMath::Ray& r, const HittableList &world, int depth);
 

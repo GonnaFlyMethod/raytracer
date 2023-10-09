@@ -9,13 +9,16 @@ void Camera::initilize(){
     image_height = static_cast<int>(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
 
+    // TODO: get rid of this alias
     camera_center = lookfrom;
 
     // Determine viewport dimensions.
     auto theta = CommonMath::degrees_to_radians(vfov);
     auto h = tan(theta/2);
-    auto viewport_height = 2 * h * focus_dist;
-    auto viewport_width = viewport_height * (static_cast<double>(image_width)/image_height);
+
+    // TODO: move these 2 members to local scope of this function
+    viewport_height = 2 * h * focus_dist;
+    viewport_width = viewport_height * (static_cast<double>(image_width)/image_height);
 
     // Calculate the u,v,w unit basis vectors for the camera coordinate frame.
     w = unit_vector(lookfrom - lookat);
@@ -44,6 +47,39 @@ int Camera::get_calculated_image_height() const{
     return image_height;
 }
 
+std::vector<double> Camera::convert_to_clip_space_coords(CommonMath::Vec3 input_vector) const {
+    double vec_to_work_with[4] = {input_vector.x(), input_vector.y(), input_vector.z(), 1};
+
+    // Set near plane and far plane according to the actual distance from camera of nearest object and
+    // farthest object in the scene
+
+    double near_plane = 0.001f;
+    double far_plane = 9000 * 2 * tan(this->vfov / 2);
+
+//    double projection_matrix[4][4] = {{1.0, 0.0, 0.0,                                                      0.0},
+//                                      {0.0, 1.0, 0.0,                                                      0.0},
+//                                      {0.0, 0.0, -1.0,                                                     -1.0},
+//                                      {0.0, 0.0,
+//                                          -2.0 * near_plane * far_plane / (far_plane - near_plane),
+//                                          near_plane + far_plane / (far_plane - near_plane)}};
+
+    double projection_matrix[4][4] = {{1.0, 0.0, 0.0, 0.0},
+                                      {0.0, 1.0, 0.0, 0.0},
+                                      {0.0, 0.0, 1.0, 0.0f},
+                                      {0.0, 0.0, 0.0f, 1.0f}};
+
+    std::vector<double> result{0.0f,0.0f,0.0f,0.0f};
+
+    for (int i = 0; i < 4; i++){
+        for (int j = 0; j < 4; j++){
+            double matrix_element = projection_matrix[i][j];
+            result[i] += matrix_element * vec_to_work_with[j];
+        }
+    }
+
+    return result;
+}
+
 CommonMath::Color Camera::ray_color(const CommonMath::Ray &r, const HittableList &world, int depth) {
     hit_record rec;
 
@@ -58,6 +94,7 @@ CommonMath::Color Camera::ray_color(const CommonMath::Ray &r, const HittableList
         CommonMath::Color attenuation;
 
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered)){
+            CommonMath::Color r = ray_color(scattered, world, depth - 1);
             return attenuation * ray_color(scattered, world, depth - 1);
         }
 
