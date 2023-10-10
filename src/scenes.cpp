@@ -219,11 +219,11 @@ void triangles(HittableList& world, Camera& cam){
     auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");
     auto lambertian_with_bricks_texture = std::make_shared<Lambertian>(bricks_texture);
 
-    world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(-1.5f,-1.0f, 0.0f),
-            CommonMath::Point3(-0.2f,3.0f, 0.0f),
-            CommonMath::Point3(-0.0f,-1.0f, -2.0f),
-            lambertian_with_bricks_texture, cam));
+//    world.add(std::make_shared<Triangle>(
+//            CommonMath::Point3(-1.5f,-1.0f, 0.0f),
+//            CommonMath::Point3(-0.2f,3.0f, 0.0f),
+//            CommonMath::Point3(-0.0f,-1.0f, -2.0f),
+//            lambertian_with_bricks_texture, cam));
 
     world.add(std::make_shared<Triangle>(
             CommonMath::Point3(-5.5f,2.0f, 0.0f),
@@ -231,15 +231,15 @@ void triangles(HittableList& world, Camera& cam){
             CommonMath::Point3(-2.5f,1.0f, -2.0f),
             lambertian_with_earth_texture, cam));
 
-    world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(0.5f,0.0f, 0.0f),
-            CommonMath::Point3(2.5f,2.0f, 0.0f),
-            CommonMath::Point3(5.5f,0.0f, 0.0f),
-            lambertian_with_bricks_texture, cam));
+//    world.add(std::make_shared<Triangle>(
+//            CommonMath::Point3(0.5f,0.0f, 0.0f),
+//            CommonMath::Point3(2.5f,2.0f, 0.0f),
+//            CommonMath::Point3(5.5f,0.0f, 0.0f),
+//            lambertian_with_bricks_texture, cam));
 
-    world.add(std::make_shared<Triangle>(
-            CommonMath::Point3(0.0f,-3.0f, -5.0f),
-            CommonMath::Point3(2.0f,-1.0f, 0.0f),
-            CommonMath::Point3(5.0f,-3.0f, 0.0f),
-            lambertian_with_earth_texture, cam));
+//    world.add(std::make_shared<Triangle>(
+//            CommonMath::Point3(0.0f,-3.0f, -5.0f),
+//            CommonMath::Point3(2.0f,-1.0f, 0.0f),
+//            CommonMath::Point3(5.0f,-3.0f, 0.0f),
+//            lambertian_with_earth_texture, cam));
 }

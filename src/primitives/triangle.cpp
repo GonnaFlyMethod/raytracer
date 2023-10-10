@@ -83,6 +83,8 @@ Triangle::Triangle(
     double original_height_multiplied_by_2 = original_height * 1.5686274509803921;
 
     // TODO: make mapping more general depending on the aspect ratio of a texture
+    // Texture should cover the whole primitive
+    // The clamping is performed on multiple levels: in triangle: hit & in ImageTexture::value()
 
     if (original_width < original_height_multiplied_by_2){
         double delta_width = original_height_multiplied_by_2 - original_width;
