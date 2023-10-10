@@ -213,7 +213,7 @@ void triangles(HittableList& world, Camera& cam){
 
     cam.defocus_angle = 0;
 
-    auto earth_texture = std::make_shared<ImageTexture>("earthmap.jpg");
+    auto earth_texture = std::make_shared<ImageTexture>("earthmap_resized.jpg");
     auto lambertian_with_earth_texture= std::make_shared<Lambertian>(earth_texture);
 
     auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");

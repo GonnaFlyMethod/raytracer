@@ -79,17 +79,22 @@ Triangle::Triangle(
         original_height = std::abs(std::abs(top_y_for_projection) - std::abs(bottom_y_for_projection));
     }
 
-    double original_height_multiplied_by_2 = original_height * 2.0f;
+//    double original_height_multiplied_by_2 = original_height * 2.0f;
+    double original_height_multiplied_by_2 = original_height * 1.5686274509803921;
+
+    // TODO: make mapping more general depending on the aspect ratio of a texture
 
     if (original_width < original_height_multiplied_by_2){
         double delta_width = original_height_multiplied_by_2 - original_width;
-        double half_of_padding = delta_width / 2.0f;
+//        double half_of_padding = delta_width / 2.0f;
+        double half_of_padding = delta_width / 1.5686274509803921;
 
         left_x_for_projection -= half_of_padding;
         right_x_for_projection += half_of_padding;
     }else if (original_width > original_height_multiplied_by_2){
         double delta_height = original_width - original_height_multiplied_by_2;
-        double half_of_padding = delta_height / 2.0f;
+//        double half_of_padding = delta_height / 2.0f;
+        double half_of_padding = delta_height / 1.5686274509803921;
 
         bottom_y_for_projection -= half_of_padding;
         top_y_for_projection += half_of_padding;
