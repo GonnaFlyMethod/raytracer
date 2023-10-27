@@ -82,6 +82,8 @@ Triangle::Triangle(
 void Triangle::adjust_to_image_dimensions(double image_width, double image_height,
                                           double texture_scaler_x, double texture_scaler_y){
 
+    // TODO: adjust uv dimensions of texture to the coordinates of vertices
+
     double actual_width = std::abs(
             std::abs(right_x_for_projection) - std::abs(left_x_for_projection));
 
