@@ -33,3 +33,7 @@
 
 .idea
 /src/cmake-build-debug
+
+.vs
+/src/out
+enc_temp_folder

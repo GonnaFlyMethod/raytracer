@@ -63,44 +63,6 @@ Triangle::Triangle(
     bottom_y_for_projection = vertices_in_local_space[0].y(),
     top_y_for_projection = vertices_in_local_space[2].y();
 
-    double original_width{};
-
-    if (left_x_for_projection < 0 && right_x_for_projection > 0){
-        original_width = std::abs(left_x_for_projection) + std::abs(right_x_for_projection);
-    }else{
-        original_width = std::abs(std::abs(right_x_for_projection) - std::abs(left_x_for_projection));
-    }
-
-    double original_height{};
-
-    if (bottom_y_for_projection < 0 && top_y_for_projection > 0){
-        original_height = std::abs(bottom_y_for_projection) + std::abs(top_y_for_projection);
-    }else{
-        original_height = std::abs(std::abs(top_y_for_projection) - std::abs(bottom_y_for_projection));
-    }
-
-//    double original_height_multiplied_by_2 = original_height * 2.0f;
-    double original_height_multiplied_by_2 = original_height * 1.5686274509803921;
-
-    // TODO: make mapping more general depending on the aspect ratio of a texture
-    // Texture should cover the whole primitive
-    // The clamping is performed on multiple levels: in triangle: hit & in ImageTexture::value()
-
-    if (original_width < original_height_multiplied_by_2){
-        double delta_width = original_height_multiplied_by_2 - original_width;
-//        double half_of_padding = delta_width / 2.0f;
-        double half_of_padding = delta_width / 1.5686274509803921;
-
-        left_x_for_projection -= half_of_padding;
-        right_x_for_projection += half_of_padding;
-    }else if (original_width > original_height_multiplied_by_2){
-        double delta_height = original_width - original_height_multiplied_by_2;
-//        double half_of_padding = delta_height / 2.0f;
-        double half_of_padding = delta_height / 1.5686274509803921;
-
-        bottom_y_for_projection -= half_of_padding;
-        top_y_for_projection += half_of_padding;
-    }
 
     std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
               [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
@@ -116,6 +78,33 @@ Triangle::Triangle(
         farthest_z_for_projection = std::abs(std::abs(farthest_object_z) - std::abs(camera_lookfrom_z));
     }
 }
+
+void Triangle::adjust_to_image_dimensions(double image_width, double image_height,
+                                          double texture_scaler_x, double texture_scaler_y){
+
+    double actual_width = std::abs(
+            std::abs(right_x_for_projection) - std::abs(left_x_for_projection));
+
+    double actual_height = std::abs(
+            std::abs(top_y_for_projection) - std::abs(bottom_y_for_projection));
+
+    double aspect_ratio = image_width / image_height;
+    double correct_width = actual_height * aspect_ratio;
+
+    // TODO: make mapping more general depending on the aspect ratio of a texture
+    // Texture should cover the whole primitive
+    // The clamping is performed on multiple levels: in triangle: hit & in ImageTexture::value()
+
+    if (actual_width < correct_width){
+        double delta = (correct_width - actual_width) / 2.0;
+
+        left_x_for_projection -= delta;
+        right_x_for_projection += delta;
+    }
+
+
+}
+
 
 AABB Triangle::get_bounding_box() const {
     return this->box;

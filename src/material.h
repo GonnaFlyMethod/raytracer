@@ -20,6 +20,8 @@ public:
 
     virtual bool scatter(
             const CommonMath::Ray& r_in, const hit_record& rec, CommonMath::Color& attenuation, CommonMath::Ray& scattered) const override;
+
+    std::shared_ptr<Texture> get_albedo();
 };
 
 class Metal: public Material{

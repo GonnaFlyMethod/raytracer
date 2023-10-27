@@ -36,6 +36,7 @@ public:
             std::shared_ptr<Material> _mat_ptr, Camera& camera);
 
     AABB get_bounding_box() const override;
+    void adjust_to_image_dimensions(double image_width, double image_height);
 
     bool hit(const CommonMath::Ray& r, Interval ray_t, hit_record& rec) const override;
 };

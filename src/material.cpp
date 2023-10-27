@@ -17,6 +17,10 @@ bool Lambertian::scatter(
     return true;
 }
 
+std::shared_ptr<Texture> Lambertian::get_albedo(){
+    return this->albedo;
+}
+
 bool Metal::scatter(
         const CommonMath::Ray &r_in,
         const hit_record &rec, CommonMath::Color &attenuation,
