@@ -63,7 +63,6 @@ Triangle::Triangle(
     bottom_y_for_projection = vertices_in_local_space[0].y(),
     top_y_for_projection = vertices_in_local_space[2].y();
 
-
     std::sort(vertices_in_local_space.begin(), vertices_in_local_space.end(),
               [&](const CommonMath::Vec3& a, const CommonMath::Vec3& b) -> bool{
                   return a.z() < b.z();
@@ -79,31 +78,46 @@ Triangle::Triangle(
     }
 }
 
-void Triangle::adjust_to_image_dimensions(double image_width, double image_height,
-                                          double texture_scaler_x, double texture_scaler_y){
-
+void Triangle::adjust_to_image_dimensions(double image_width, double image_height){
     // TODO: adjust uv dimensions of texture to the coordinates of vertices
 
-    double actual_width = std::abs(
-            std::abs(right_x_for_projection) - std::abs(left_x_for_projection));
-
-    double actual_height = std::abs(
-            std::abs(top_y_for_projection) - std::abs(bottom_y_for_projection));
+    double actual_width = CommonMath::distance(right_x_for_projection, left_x_for_projection);
+    double actual_height = CommonMath::distance(top_y_for_projection, bottom_y_for_projection);
 
     double aspect_ratio = image_width / image_height;
-    double correct_width = actual_height * aspect_ratio;
 
-    // TODO: make mapping more general depending on the aspect ratio of a texture
-    // Texture should cover the whole primitive
-    // The clamping is performed on multiple levels: in triangle: hit & in ImageTexture::value()
+    // TODO: add Ceiling rounding to distances, so delta will be integer
 
-    if (actual_width < correct_width){
-        double delta = (correct_width - actual_width) / 2.0;
+    if (actual_width > actual_height){
+        double correct_height = actual_width / aspect_ratio;
 
-        left_x_for_projection -= delta;
-        right_x_for_projection += delta;
+        if (actual_height < correct_height){
+            double delta = CommonMath::distance(correct_height, actual_height) / 2.0;
+
+            bottom_y_for_projection -= delta;
+            top_y_for_projection += delta;
+        }else if(actual_height > correct_height){
+            double delta = CommonMath::distance(actual_height, correct_height) / 2.0;
+
+            bottom_y_for_projection += delta;
+            top_y_for_projection -= delta;
+        }
+
+    }else{
+        double correct_width = actual_height * aspect_ratio;
+
+        if (actual_width < correct_width){
+            double delta = CommonMath::distance(correct_width, actual_width) / 2.0;
+
+            left_x_for_projection -= delta;
+            right_x_for_projection += delta;
+        }else if (actual_width > correct_width){
+            double delta = CommonMath::distance(actual_width, correct_width) / 2.0;
+
+            left_x_for_projection += delta;
+            right_x_for_projection -= delta;
+        }
     }
-
 
 }
 

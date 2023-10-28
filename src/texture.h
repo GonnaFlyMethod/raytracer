@@ -47,6 +47,7 @@ private:
 public:
     ImageTexture(std::string filename);
 
+    void get_dimensions(double& width, double& height);
     CommonMath::Color value(double u, double v, const CommonMath::Point3& p) const override;
 };
 

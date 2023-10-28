@@ -214,6 +214,11 @@ void triangles(HittableList& world, Camera& cam){
     cam.defocus_angle = 0;
 
     auto earth_texture = std::make_shared<ImageTexture>("earthmap_resized.jpg");
+
+    double width, height;
+
+    earth_texture->get_dimensions(width, height);
+
     auto lambertian_with_earth_texture= std::make_shared<Lambertian>(earth_texture);
 
     auto bricks_texture = std::make_shared<ImageTexture>("bricks.jpg");
@@ -225,12 +230,15 @@ void triangles(HittableList& world, Camera& cam){
 //            CommonMath::Point3(-0.0f,-1.0f, -2.0f),
 //            lambertian_with_bricks_texture, cam));
 
-    // Original
-    world.add(std::make_shared<Triangle>(
+
+    auto triangle0 = std::make_shared<Triangle>(
             CommonMath::Point3(-5.5f,0.0f, 0.0f),
             CommonMath::Point3(-3.5f,-2.5f, 0.0f),
-            CommonMath::Point3(-2.5f,0.0f, 0.0f),
-            lambertian_with_earth_texture, cam));
+            CommonMath::Point3(6.0f,0.0f, 0.0f),
+            lambertian_with_earth_texture, cam);
+    triangle0->adjust_to_image_dimensions(width, height);
+
+    world.add(triangle0);
 //
 //    world.add(std::make_shared<Triangle>(
 //            CommonMath::Point3(0.5f,0.0f, 0.0f),

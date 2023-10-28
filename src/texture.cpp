@@ -17,6 +17,11 @@ CommonMath::Color CheckerTexture::value(double u, double v, const CommonMath::Po
 
 ImageTexture::ImageTexture(std::string filename): image(filename){}
 
+void ImageTexture::get_dimensions(double& width, double& height){
+    width = this->image.get_image_width();
+    height = this->image.get_image_height();
+}
+
 CommonMath::Color ImageTexture::value(double u, double v, const CommonMath::Point3 &p) const {
     if(this->image.get_image_height() <= 0) return {0.0f, 1.0f, 1.0f} /* Cyan */;
 

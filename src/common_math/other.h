@@ -19,5 +19,9 @@ namespace CommonMath{
                     (semi_perimeter - length_of_b_side) *
                     (semi_perimeter -length_of_c_side));
     };
+
+    inline double distance(double num_a, double num_b){
+        return std::abs(std::abs(num_a) - std::abs(num_b));
+    }
 }
 
