@@ -178,14 +178,9 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
     CommonMath::Vec3 eye = rec.normal * (intersection_point- cam.lookfrom).length();
 
     CommonMath::Mat4 view_matrix = CommonMath::look_at_for_view_projection(
-            CommonMath::Vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()),
+            CommonMath::Vec3(eye.x(), eye.y(), eye.z()),
             CommonMath::Vec3(0.0, 0.0, 0.0),
             CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z()));
-
-//    CommonMath::Mat4 view_matrix = CommonMath::look_at_for_view_projection(
-//            CommonMath::Vec3(eye.x(), eye.y(), eye.z()),
-//            CommonMath::Vec3(0.0, 0.0, 0.0),
-//            CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z()));
 
     CommonMath::Mat4 orthographic_projection = CommonMath::orthographic_projection(
             this->left_x_for_projection,
