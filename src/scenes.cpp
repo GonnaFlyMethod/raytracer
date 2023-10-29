@@ -230,15 +230,15 @@ void triangles(HittableList& world, Camera& cam){
     auto triangle0 = std::make_shared<Triangle>(
             CommonMath::Point3(-1.5f,-1.0f, 0.0f),
             CommonMath::Point3(-0.2f,3.0f, 0.0f),
-            CommonMath::Point3(-0.0f,-1.0f, 0.0f),
+            CommonMath::Point3(-0.0f,-1.0f, -2.0f),
             lambertian_with_bricks_texture, cam);
     triangle0->adjust_to_image_dimensions(bricks_texture_width, bricks_texture_height);
     world.add(triangle0);
 
     auto triangle1 = std::make_shared<Triangle>(
             CommonMath::Point3(-5.5f,2.0f, 0.0f),
-            CommonMath::Point3(-3.5f,-2.5f, 0.0f),
-            CommonMath::Point3(-2.5f,1.0f, 0.0f),
+            CommonMath::Point3(-3.5f,-2.5f, -1.0f),
+            CommonMath::Point3(-2.5f,1.0f, -2.0f),
             lambertian_with_earth_texture, cam);
     triangle1->adjust_to_image_dimensions(earth_texture_width, earth_texture_height);
     world.add(triangle1);
@@ -252,7 +252,7 @@ void triangles(HittableList& world, Camera& cam){
     world.add(triangle2);
 
     auto triangle3 = std::make_shared<Triangle>(
-            CommonMath::Point3(0.0f,-3.0f, 0.0f),
+            CommonMath::Point3(0.0f,-3.0f, -5.0f),
             CommonMath::Point3(2.0f,-1.0f, 0.0f),
             CommonMath::Point3(5.0f,-3.0f, 0.0f),
             lambertian_with_earth_texture, cam);
