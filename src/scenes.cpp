@@ -238,7 +238,7 @@ void triangles(HittableList& world, Camera& cam){
     auto triangle1 = std::make_shared<Triangle>(
             CommonMath::Point3(-5.5f,2.0f, 0.0f),
             CommonMath::Point3(-3.5f,-2.5f, -1.0f),
-            CommonMath::Point3(-2.5f,1.0f, -2.0f),
+            CommonMath::Point3(-2.5f,1.0f, -8.0f),
             lambertian_with_earth_texture, cam);
     triangle1->adjust_to_image_dimensions(earth_texture_width, earth_texture_height);
     world.add(triangle1);
