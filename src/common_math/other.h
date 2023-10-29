@@ -21,10 +21,6 @@ namespace CommonMath{
     };
 
     inline double distance(double num_a, double num_b){
-        if (num_a < 0 && num_b > 0 || num_a > 0 && num_b < 0){
-            return std::abs(num_a) + std::abs(num_b);
-        }
-
         return std::abs(std::abs(num_a) - std::abs(num_b));
     }
 }
