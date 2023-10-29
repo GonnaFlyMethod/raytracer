@@ -68,6 +68,8 @@ Triangle::Triangle(
                   return a.z() < b.z();
               });
 
+    nearest_vertex_from_cam = vertices_in_local_space[0].z();
+
     double farthest_object_z = vertices_in_local_space[2].z();
     double camera_lookfrom_z = cam.lookfrom.z();
 
@@ -175,6 +177,7 @@ bool Triangle::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) co
             CommonMath::Vec3(cam.lookfrom.x(), cam.lookfrom.y(), cam.lookfrom.z()),
             CommonMath::Vec3(0.0, 0.0, 0.0),
             CommonMath::Vec3(cam.vup.x(), cam.vup.y(), cam.vup.z()));
+
 
     CommonMath::Mat4 orthographic_projection = CommonMath::orthographic_projection(
             this->left_x_for_projection,

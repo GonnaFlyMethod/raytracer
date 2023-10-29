@@ -37,6 +37,7 @@ bool Quad::hit(const CommonMath::Ray &r, Interval ray_t, hit_record &rec) const 
     rec.t = appropriate_direction_scaler;
     rec.p = intersection_point;
     rec.mat_ptr = this->mat_ptr;
+
     rec.set_face_normal(r, this->normal);
 
     return true;

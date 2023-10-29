@@ -24,6 +24,8 @@ private:
            top_y_for_projection,
            farthest_z_for_projection;
 
+    double nearest_vertex_from_cam;
+
     CommonMath::Vec3 vertex0_in_local_space;
     CommonMath::Vec3 vertex1_in_local_space;
     CommonMath::Vec3 vertex2_in_local_space;

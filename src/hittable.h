@@ -19,7 +19,7 @@ struct hit_record{
     bool front_face = false;
     double u, v;
 
-    inline void set_face_normal(const CommonMath::Ray& r, CommonMath::Vec3 outward_normal){
+    inline void set_face_normal(const CommonMath::Ray& r, const CommonMath::Vec3& outward_normal){
         front_face = dot(r.GetDirection(), outward_normal) < 0;
         normal = front_face ? outward_normal: -outward_normal;
     }
