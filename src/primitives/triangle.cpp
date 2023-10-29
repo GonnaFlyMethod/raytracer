@@ -90,30 +90,24 @@ void Triangle::adjust_to_image_dimensions(double image_width, double image_heigh
 
     if (actual_width > actual_height){
         double correct_height = actual_width / aspect_ratio;
+        double delta = CommonMath::distance(correct_height, actual_height) / 2.0;
 
         if (actual_height < correct_height){
-            double delta = CommonMath::distance(correct_height, actual_height) / 2.0;
-
             bottom_y_for_projection -= delta;
             top_y_for_projection += delta;
         }else if(actual_height > correct_height){
-            double delta = CommonMath::distance(actual_height, correct_height) / 2.0;
-
             bottom_y_for_projection += delta;
             top_y_for_projection -= delta;
         }
 
     }else{
         double correct_width = actual_height * aspect_ratio;
+        double delta = CommonMath::distance(correct_width, actual_width) / 2.0;
 
         if (actual_width < correct_width){
-            double delta = CommonMath::distance(correct_width, actual_width) / 2.0;
-
             left_x_for_projection -= delta;
             right_x_for_projection += delta;
         }else if (actual_width > correct_width){
-            double delta = CommonMath::distance(actual_width, correct_width) / 2.0;
-
             left_x_for_projection += delta;
             right_x_for_projection -= delta;
         }
